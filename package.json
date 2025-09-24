@@ -1,0 +1,12 @@
+{
+  "name": "liar-s-dice-rev",
+  "version": "1.0.0",
+  "description": "Build a fullstack application using Spring Boot & React. Back your data with a SQL database, expose with an HTTP API, and a webapp UI.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

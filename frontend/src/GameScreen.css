@@ -1,0 +1,73 @@
+button{
+	font-size:inherit;
+	font-weight: inherit;
+}
+
+header{
+	font-size:2.5vh;
+}
+
+.CurrentPlayers{
+	display:flex;
+}
+
+.PlayerInfoContainer{
+	flex:1;
+	border:1px dashed #ccc;
+	padding:0.5rem;
+}
+
+.PlayerInfoContainer>header{
+	font-size: 2vh;
+}
+
+.Call{
+	padding:4vh;
+}
+
+.DiceLeft{
+	height:7.5vh;
+}
+
+.prevCall{
+	font-size: 4vh;
+	font-weight: bold;
+}
+
+.callButtonWidth{
+	width:100px;
+	box-sizing: border-box;
+	text-align: center;
+	font-size:inherit;
+	font-weight: inherit;
+}
+
+.CallChangeButtons{
+	font-size:2vh;
+	font-weight:bold;
+}
+
+.RoundEndButtonHolder{
+	padding:5vh 0;
+	display: flex;
+	justify-content: space-around;
+	font-size:2vh;
+	font-weight:bold;
+}
+
+.RoundEndButtonHolder>button{
+	width:20vw;
+}
+
+.playerDice{
+	height:15vh;
+	display:inline;
+	margin:1vh;
+}
+
+.YourDice{
+	position:absolute;
+	bottom:0;
+	width:100vw;
+	padding:2vh 0;
+}
