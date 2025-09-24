@@ -1,0 +1,51 @@
+.username{
+	font-size:10vh;
+	position:absolute;
+	width:66%;
+	height:12vh;
+	left:0;
+	top:0;
+}
+
+.GameStats{
+	font-size:5vh;
+	position:absolute;
+	width:66%;
+	left:0;
+	top:12vh;
+}
+
+.addFriend{
+	position:absolute;
+	width:33%;
+	height:4vh;
+	right:1%;
+	top:0;
+	display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.addFriend button{
+	font-size:2vh;
+}
+
+.FriendListHolder{
+	box-sizing: border-box;
+	border:1px solid black;
+	position:absolute;
+	width:33%;
+	height:calc(100vh - 4vh - 2vh);
+	right:1%;
+	top: 4vh;
+	font-size:larger;
+}
+
+.FriendListHeader{
+	font-weight:bold;
+	font-size:x-large;
+}
+
+.FriendList{
+	overflow-y: auto;
+}

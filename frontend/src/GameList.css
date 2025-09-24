@@ -1,0 +1,41 @@
+.ViewGames{
+	box-sizing: border-box;
+	height:96vh;
+	margin:2vh 0;
+	overflow-y: auto;
+}
+
+.GameTableHeader, .GameTableRow{
+	display:flex;
+	width:80%;
+	margin:0 10%;
+}
+
+.GameTableHeader>div, .GameTableRow>div{
+	border:1px solid black;
+}
+
+.GameTableHeader{
+	position:sticky;
+	top:0;
+}
+
+.GameTableHeader>div{
+	background-color: lightgray;
+}
+
+.hostNameColumn{
+	width:40%;
+}
+.playerCountColumn{
+	width:20%;
+}
+.visibilityColumn{
+	width:20%;
+}
+.joinColumn{
+	width:20%;
+}
+.spectateColumn{
+	width:20%;
+}

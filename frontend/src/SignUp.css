@@ -1,0 +1,49 @@
+.centering{
+	width:100vw;
+	height:100vh;
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+.SignUpHeader{
+	font-size:7vh;
+}
+
+.SignUpForm{
+	display:flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: space-evenly;
+	max-width: 700px; /* make it 700 once a show hide icon is implemented */
+	min-width:400px;
+	min-height: 150px;
+	white-space: nowrap;
+}
+
+.SignUpForm>div{
+	width:100%;
+	display:flex;
+}
+
+.SignUpForm>div>div{
+	width:100%;
+	display:flex;
+	flex-direction: column;
+    justify-content: center;
+	padding: 0 10px;
+}
+
+label{
+	width:20%;
+}
+
+input[type="submit"]{
+	width:50%;
+	margin:5% 0;
+}
+
+.logInSpacer{
+	margin:5vh 0;
+}

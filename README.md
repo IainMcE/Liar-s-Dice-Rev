@@ -27,3 +27,4 @@ opitonal ideas:
 	match history
 	blocking users
 	auth for resetting passwords
+	"physically" simulated dice using three.js
