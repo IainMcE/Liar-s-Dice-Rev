@@ -1,6 +1,11 @@
-import './SignUp.css'
+import './SignUp.css';
+import {useNavigate} from 'react-router-dom';
 
 function SignUpForm(){
+	const navigate = useNavigate();
+	function ToLogin(){
+		navigate("/Login");
+	}
 	return(
 		<div className="centering">
 			<header className="SignUpHeader">Sign Up</header>
@@ -23,7 +28,7 @@ function SignUpForm(){
 				<input type="submit"/>
 			</form>
 			<div className="loginSpacer">
-				<button title="Lead to log in page">Log In</button>
+				<button title="Lead to log in page" onClick={ToLogin}>Log In</button>
 			</div>
 		</div>
 	)

@@ -1,6 +1,6 @@
 .centering{
-	width:100vw;
-	height:100vh;
+	width:100%;
+	height:100%;
 	display:flex;
 	flex-direction: column;
 	align-items: center;
@@ -16,7 +16,7 @@
 	flex-direction: column;
 	align-items: center;
 	justify-content: space-evenly;
-	max-width: 700px; /* make it 700 once a show hide icon is implemented */
+	max-width: 700px;
 	min-width:400px;
 	min-height: 150px;
 	white-space: nowrap;
@@ -35,11 +35,11 @@
 	padding: 0 10px;
 }
 
-label{
+.SignUpForm label{
 	width:20%;
 }
 
-input[type="submit"]{
+.SignUpForm input[type="submit"]{
 	width:50%;
 	margin:5% 0;
 }
