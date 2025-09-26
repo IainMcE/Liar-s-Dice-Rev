@@ -43,4 +43,17 @@ function friendListRow(user){//is it id? is it string?
 	)
 }
 
+function MiniProfile(){		//TODO format!!!
+	let playerData = {username:"Frank"}
+	return(
+		<div className="miniUserProfile">
+			<header className="miniUsername">{playerData.username}</header>
+			<div className="miniAddFriend" title="If the profile is not the logged in user">
+				<button title="Show add or remove based on the">Add/Remove Friend</button>
+			</div>
+		</div>
+	)
+}
+
+export {MiniProfile};
 export default PlayerProfile;

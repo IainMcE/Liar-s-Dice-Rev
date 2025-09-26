@@ -11,6 +11,11 @@
 	font-size:7vh;
 }
 
+.UserIconPopUp .LoginHeader{
+	font-size: 3vh;
+	font-weight: bold;
+}
+
 .LoginForm{
 	display:flex;
 	flex-direction: column;

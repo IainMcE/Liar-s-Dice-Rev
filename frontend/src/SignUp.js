@@ -1,7 +1,8 @@
 import './SignUp.css';
 import {useNavigate} from 'react-router-dom';
+import {SwitchPasswordVisibility} from './util.js';
 
-function SignUpForm(){
+function SignUp(){
 	const navigate = useNavigate();
 	function ToLogin(){
 		navigate("/Login");
@@ -9,24 +10,7 @@ function SignUpForm(){
 	return(
 		<div className="centering">
 			<header className="SignUpHeader">Sign Up</header>
-			<form className="SignUpForm">
-				<div>
-					<div>
-						<label htmlFor="username">Username:</label>
-						<label htmlFor="password">Password:</label>
-						<label htmlFor="repeatPassword">Repeat Password:</label>
-					</div>
-					<div>
-						<input type="text" id="username" name="username" placeholder="Username"/>
-						<input type="password" id="password" name="password" placeholder="Password"/>
-						<input type="password" id="repeatPassword" name="repeatPassword" placeholder="Repeat Password"/>
-					</div>
-					<div>
-						<button title="onclick: password and repeat input type swaps between 'text' and 'password'">Show Password</button>
-					</div>
-				</div>
-				<input type="submit"/>
-			</form>
+			<SignUpForm/>
 			<div className="loginSpacer">
 				<button title="Lead to log in page" onClick={ToLogin}>Log In</button>
 			</div>
@@ -34,6 +18,27 @@ function SignUpForm(){
 	)
 }
 
-//have a mini login element to be displayed over other pages?
+function SignUpForm(){
+	return(
+		<form className="SignUpForm">
+			<div>
+				<div>
+					<label htmlFor="signUpUsername">Username:</label>
+					<label htmlFor="signUpPassword">Password:</label>
+					<label htmlFor="repeatPassword">Repeat Password:</label>
+				</div>
+				<div>
+					<input type="text" id="signUpUsername" name="username" placeholder="Username"/>
+					<input type="password" id="signUpPassword" name="password" placeholder="Password"/>
+					<input type="password" id="repeatPassword" name="repeatPassword" placeholder="Repeat Password"/>
+				</div>
+				<div>
+					<SwitchPasswordVisibility/>
+				</div>
+			</div>
+			<input type="submit"/>
+		</form>
+	)
+}
 
-export default SignUpForm;
+export default SignUp;
