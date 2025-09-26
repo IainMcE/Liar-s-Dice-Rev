@@ -1,6 +1,6 @@
 import './SignUp.css';
 import {useNavigate} from 'react-router-dom';
-import {SwitchPasswordVisibility} from './util.js';
+import { useState } from 'react';
 
 function SignUp(){
 	const navigate = useNavigate();
@@ -19,6 +19,7 @@ function SignUp(){
 }
 
 function SignUpForm(){
+	const [showPassword, setShowPassword] = useState(false);
 	return(
 		<form className="SignUpForm">
 			<div>
@@ -29,11 +30,13 @@ function SignUpForm(){
 				</div>
 				<div>
 					<input type="text" id="signUpUsername" name="username" placeholder="Username"/>
-					<input type="password" id="signUpPassword" name="password" placeholder="Password"/>
-					<input type="password" id="repeatPassword" name="repeatPassword" placeholder="Repeat Password"/>
+					<input type={showPassword?"text":"password"} id="signUpPassword" name="password" placeholder="Password"/>
+					<input type={showPassword?"text":"password"} id="repeatPassword" name="repeatPassword" placeholder="Repeat Password"/>
 				</div>
 				<div>
-					<SwitchPasswordVisibility/>
+					<button className="passwordVisibility" onClick={(e)=>{
+						e.preventDefault(); setShowPassword(!showPassword)
+						}}>{showPassword?"Hide":"Show"} Password</button>
 				</div>
 			</div>
 			<input type="submit"/>

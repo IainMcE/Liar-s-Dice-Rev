@@ -1,6 +1,6 @@
 import './App.css';
 import {BrowserRouter as Router, Route, Link, Routes, useLocation} from 'react-router-dom';
-// import GameScreen from './GameScreen.js';
+import GameScreen from './GameScreen.js';
 import GameList from './GameList.js';
 import PlayerProfile, {MiniProfile} from './PlayerProfile.js'
 import Login, {MiniLogin} from './Login.js'
@@ -24,11 +24,11 @@ function App() {
 				</nav>
 				<div className="MainDisplay">
 					<Routes>
-						<Route path="/"element={<Missing/>}/>
-						<Route path="/GameList"element={<GameList/>}/>
-						<Route path="/Login"element={<Login/>}/>
-						<Route path="/SignUp"element={<SignUp/>}/>
-						{/* <Route path="/GameScreen" element={GameScreen(4)}/> */}
+						<Route path="/" element={<Missing/>}/>
+						<Route path="/GameList" element={<GameList/>}/>
+						<Route path="/Login" element={<Login/>}/>
+						<Route path="/SignUp" element={<SignUp/>}/>
+						<Route path="/GameScreen" element={<GameScreen/>}/>
 						<Route path="/User" element={<PlayerProfile/>}/>
 					</Routes>
 				</div>

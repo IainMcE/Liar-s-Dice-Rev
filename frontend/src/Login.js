@@ -1,9 +1,10 @@
 import './Login.css'
 import {useNavigate} from 'react-router-dom';
-import {SwitchPasswordVisibility} from './util.js';
+import { useState } from 'react';
 import {hideUserIconPopUp} from './App.js';
 
 function LoginForm(){
+	const [showPassword, setShowPassword] = useState(false);
 	return(
 		<div className="centering">
 			<header className="LoginHeader">Log In</header>
@@ -14,8 +15,10 @@ function LoginForm(){
 				</div>
 				<div>
 					<label htmlFor="password">Password:</label>
-					<input type="password" id="password" name="password" placeholder="Password" className="password"/>
-					<SwitchPasswordVisibility/>
+					<input type={showPassword?"text":"password"} id="password" name="password" placeholder="Password"/>
+					<button className="passwordVisibility" onClick={(e)=>{
+						e.preventDefault(); setShowPassword(!showPassword)
+						}}>{showPassword?"Hide":"Show"} Password</button>
 				</div>
 				<input type="submit"/>
 			</form>
@@ -26,6 +29,7 @@ function LoginForm(){
 
 //have a mini login element to be displayed over other pages?
 function MiniLogin(){
+	const [showPassword, setShowPassword] = useState(false);	//this should not persist between being shown and hidden
 	return(
 		<div className="centering">
 			<header className="LoginHeader">Log In</header>
@@ -36,8 +40,10 @@ function MiniLogin(){
 				</div>
 				<div>
 					<label htmlFor="password">Password:</label><br/>
-					<input type="password" id="password" name="password" placeholder="Password" className="password"/>
-					<SwitchPasswordVisibility/>
+					<input type={showPassword?"text":"password"} id="password" name="password" placeholder="Password"/>
+					<button className="passwordVisibility" onClick={(e)=>{
+						e.preventDefault(); setShowPassword(!showPassword)
+						}}>{showPassword?"Hide":"Show"} Password</button>
 				</div>
 				<input type="submit"/>
 			</form>
