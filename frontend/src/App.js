@@ -6,6 +6,7 @@ import PlayerProfile, {MiniProfile} from './PlayerProfile.js'
 import Login, {MiniLogin} from './Login.js'
 import SignUp from './SignUp.js'
 import { useState } from 'react';
+import { DisplayUserProvider } from './MiniUser.js';
 
 function hideUserIconPopUp(){
 	let elStyle = document.querySelector(".UserIconPopUp").style
@@ -25,11 +26,11 @@ function App() {
 				<div className="MainDisplay">
 					<Routes>
 						<Route path="/" element={<Missing/>}/>
-						<Route path="/GameList" element={<GameList/>}/>
+						<Route path="/GameList" element={<DisplayUserProvider><GameList/></DisplayUserProvider>}/>
 						<Route path="/Login" element={<Login/>}/>
 						<Route path="/SignUp" element={<SignUp/>}/>
-						<Route path="/GameScreen" element={<GameScreen/>}/>
-						<Route path="/User" element={<PlayerProfile/>}/>
+						{<Route path="/GameScreen/:gameId" element={<GameScreen/>}/>}
+						<Route path="/User/:id" element={<PlayerProfile/>}/>
 					</Routes>
 				</div>
 				{/* create game button, link to game screen, pos bottom right? 
@@ -72,7 +73,7 @@ function UserIcon(){
 	}
 	if(path !== "/SignUp" && path !== "/Login"){
 		return(
-			<img className="profilePicture" 
+			<img className="profilePicture" alt="Your Profile" 
 				onClick={(event)=>{displayUserIconPopUp("0.5vh", "5vh", "right", "top"); event.stopPropagation()}}
 			/>
 		)

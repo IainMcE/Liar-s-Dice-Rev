@@ -1,4 +1,5 @@
 import './GameList.css'
+import {MiniUser, DisplayMiniUser, hideMiniUser, useDisplayUser} from './MiniUser.js';
 
 //requires integration with backend for info on games in set up (host username, number players, visibility)
 //		or list game ids then query for their info?
@@ -6,10 +7,11 @@ import './GameList.css'
 function GameList() {
 	let tableRows = [];
 	for(let i = 0; i<100; i++){
-		tableRows.push(tableRow("Jerry (from Seinfeld)", 3, "Friends Only"));
+		tableRows.push(TableRow(1, "Jerry (from Seinfeld)", 3, "Friends Only"));
 	}
 	return (
-	<div className="ViewGames">
+	<div className="ViewGames" onClick={hideMiniUser}>
+		<MiniUser/>
 		<header className="GameTableHeader">
 			<div className="hostNameColumn">Host</div>
 			<div className="playerCountColumn">Players</div>
@@ -22,19 +24,20 @@ function GameList() {
 	);
 }
 
-function tableRow(hostName, numPlayers, visibility){
+function TableRow(hostId, hostName, numPlayers, visibility){
+	const {setId} = useDisplayUser();
 	return(
-	<div className="GameTableRow">
-		<div className="hostNameColumn">{hostName}</div>
-		<div className="playerCountColumn">{numPlayers}</div>
-		<div className="visibilityColumn">{visibility}</div>
-		<div className="joinColumn">
-			<button className="joinButton">Join</button>
+		<div className="GameTableRow">
+			<div className="hostNameColumn" onClick={(e)=>{setId(hostId);DisplayMiniUser(e, "left" , "top")}}>{hostName}</div>	{/* fix vertical spacing, also on scroll*/}
+			<div className="playerCountColumn">{numPlayers}</div>
+			<div className="visibilityColumn">{visibility}</div>
+			<div className="joinColumn">
+				<button className="joinButton">Join</button>
+			</div>
+			<div className="spectateColumn">
+				<button className="spectateButton">Spectate</button>
+			</div>
 		</div>
-		<div className="spectateColumn">
-			<button className="spectateButton">Spectate</button>
-		</div>
-	</div>
 	)
 }
 

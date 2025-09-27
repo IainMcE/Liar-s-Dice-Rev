@@ -1,7 +1,15 @@
 import './PlayerProfile.css'
+import { useParams } from 'react-router-dom';
+import {Link} from 'react-router-dom';
 
 function PlayerProfile(){//get id, passed in? from url?
+	let {id} = useParams();
+	id = parseInt(id);
+	//playerData = fetch full display info by id
 	let playerData = {username:"Frank", wins:5, losses:5}
+	if(id===1){
+		playerData = {username:"Jerry (from Seinfeld)", wins:2, losses:4}
+	}
 	return(
 		<div className="userProfile">
 			<header className="username">{playerData.username}</header>
@@ -43,14 +51,20 @@ function friendListRow(user){//is it id? is it string?
 	)
 }
 
-function MiniProfile(){		//TODO format!!!
+function MiniProfile(userId){
+	//playerData = fetch short display info by id
+	userId = userId.userId;	//why does it do this?
 	let playerData = {username:"Frank"}
+	if(userId===1){
+		playerData = {username:"Jerry (from Seinfeld)"}
+	}
 	return(
 		<div className="miniUserProfile">
-			<header className="miniUsername">{playerData.username}</header>
+			<Link to={"/User/"+userId} className="miniUsername">{playerData.username}</Link>
 			<div className="miniAddFriend" title="If the profile is not the logged in user">
 				<button title="Show add or remove based on the">Add/Remove Friend</button>
 			</div>
+			{/* some navigation to the full profile (id) */}
 		</div>
 	)
 }

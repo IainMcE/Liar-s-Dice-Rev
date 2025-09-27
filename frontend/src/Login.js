@@ -43,7 +43,7 @@ function MiniLogin(){
 					<input type={showPassword?"text":"password"} id="password" name="password" placeholder="Password"/>
 					<button className="passwordVisibility" onClick={(e)=>{
 						e.preventDefault(); setShowPassword(!showPassword)
-						}}>{showPassword?"Hide":"Show"} Password</button>
+						}}>{showPassword?"Hide Password":"Show Password"}</button>
 				</div>
 				<input type="submit"/>
 			</form>

@@ -26,6 +26,7 @@
 
 .hostNameColumn{
 	width:40%;
+	cursor: pointer;
 }
 .playerCountColumn{
 	width:20%;

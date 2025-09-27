@@ -1,0 +1,7 @@
+.MiniUserDisplay{
+	position:absolute;
+	visibility: hidden;
+	background: white;
+	border:1px black solid;
+	box-sizing: border-box;
+}
