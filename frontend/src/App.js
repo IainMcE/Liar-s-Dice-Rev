@@ -73,7 +73,7 @@ function UserIcon(){
 	}
 	if(path !== "/SignUp" && path !== "/Login"){
 		return(
-			<img className="profilePicture" alt="Your Profile" 
+			<img className="profilePicture" alt="Your Profile" src="/user profile.png"
 				onClick={(event)=>{displayUserIconPopUp("0.5vh", "5vh", "right", "top"); event.stopPropagation()}}
 			/>
 		)
