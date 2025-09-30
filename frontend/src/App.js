@@ -5,19 +5,39 @@ import GameList from './GameList.js';
 import PlayerProfile, {MiniProfile} from './PlayerProfile.js'
 import Login, {MiniLogin} from './Login.js'
 import SignUp from './SignUp.js'
-import { useState } from 'react';
+import { createContext, useContext, useState } from 'react';
 import { DisplayUserProvider } from './MiniUser.js';
+
+const LoggedInIdContext = createContext();
+
+export const useLoggedInId = () => useContext(LoggedInIdContext);
+
+export function LoggedInIdProvider({ children }) {
+	const [loggedInId, setLoggedInId] = useState(-1);
+	return(
+		<LoggedInIdContext.Provider value={{loggedInId, setLoggedInId}}>
+			{children}
+		</LoggedInIdContext.Provider>
+	);
+}
 
 function hideUserIconPopUp(){
 	let elStyle = document.querySelector(".UserIconPopUp").style
 	elStyle.visibility = "hidden";
 }
 
-function App() {
-	const [isLoggedIn, setLoggedIn] = useState(false);
+// useEffect(() => {
+// 	fetch('/api/data')
+// 		.then(response => response.json())
+// 		.then(data => setData(data))
+// 		.catch(error => console.error('Error fetching data:', error));
+// }, []);
 
+function App() {
+	//const {loggedInId, setLoggedInId} = useLoggedInId();
 	return (
 		<div className="App" onClick={hideUserIconPopUp}>
+			<LoggedInIdProvider>
 			<Router>
 				<nav className="NavHeader">
 					<Link to="/GameList">Active Games</Link>
@@ -29,7 +49,7 @@ function App() {
 						<Route path="/GameList" element={<DisplayUserProvider><GameList/></DisplayUserProvider>}/>
 						<Route path="/Login" element={<Login/>}/>
 						<Route path="/SignUp" element={<SignUp/>}/>
-						{<Route path="/GameScreen/:gameId" element={<GameScreen/>}/>}
+						<Route path="/GameScreen/:gameId" element={<GameScreen/>}/>
 						<Route path="/User/:id" element={<PlayerProfile/>}/>
 					</Routes>
 				</div>
@@ -37,9 +57,10 @@ function App() {
 				conditional visibility? ie not visible on game screen or login/sign up?
 				also onclick if logged in go to create, else bring up login/sign up*/}
 				<div className="UserIconPopUp">
-					<UserIconPopUp isLoggedIn={isLoggedIn}/>
+					<UserIconPopUp/>
 				</div>
 			</Router>
+			</LoggedInIdProvider>
 		</div>
 	);
 }
@@ -73,7 +94,7 @@ function UserIcon(){
 	}
 	if(path !== "/SignUp" && path !== "/Login"){
 		return(
-			<img className="profilePicture" alt="Your Profile" src="/user profile.png"
+			<img className="profilePicture" alt="Your Profile" src="/userProfile.png"
 				onClick={(event)=>{displayUserIconPopUp("0.5vh", "5vh", "right", "top"); event.stopPropagation()}}
 			/>
 		)
@@ -82,12 +103,13 @@ function UserIcon(){
 	}
 }
 
-const UserIconPopUp = ({isLoggedIn})=>{
+const UserIconPopUp = ()=>{
+	const {loggedInId, setLoggedInId} = useLoggedInId();
 	let result;
-	if(!isLoggedIn){
+	if(loggedInId < 0){
 		result = <MiniLogin/>
 	}else{
-		result = <MiniProfile/>
+		result = <MiniProfile userId={loggedInId}/>
 	}
 	return(
 		<div className="miniIcon" onClick={(event)=>{event.stopPropagation()}}>

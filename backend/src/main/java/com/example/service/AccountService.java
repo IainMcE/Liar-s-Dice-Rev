@@ -36,7 +36,7 @@ public class AccountService{
     public Account getDisplayAccountById(int accountId){
         Optional<Account> matching = accountRepository.findByAccountId(accountId);
         if(matching.isPresent()){
-            return matching.get();
+            return matching.get().displayInformation();
         }
         return null;
     }

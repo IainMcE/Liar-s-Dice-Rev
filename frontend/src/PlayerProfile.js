@@ -1,19 +1,22 @@
+import { useEffect, useState } from 'react';
 import './PlayerProfile.css'
 import { useParams } from 'react-router-dom';
 import {Link} from 'react-router-dom';
 
-function PlayerProfile(){//get id, passed in? from url?
+function PlayerProfile(){
+	const [playerData, setPlayerData] = useState(null);
 	let {id} = useParams();
 	id = parseInt(id);
-	//playerData = fetch full display info by id
-	let playerData = {username:"Frank", wins:5, losses:5}
-	if(id===1){
-		playerData = {username:"Jerry (from Seinfeld)", wins:2, losses:4}
-	}
+	useEffect(()=>{
+		fetch('http://localhost:8080/User/'+id)
+			.then(response=>response.json())
+			.then(data => setPlayerData(data))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, []);
 	return(
 		<div className="userProfile">
-			<header className="username">{playerData.username}</header>
-			<div className="GameStats">Win rate: {playerData.wins/(playerData.wins+playerData.losses)*100}%</div>
+			<header className="username">{playerData?.username??"Loading..."}</header>
+			<div className="GameStats">Win rate: {playerData!=null?(playerData.wins/(playerData.wins+playerData.losses)*100):0}%</div>
 			<div className="addFriend" title="If the profile is not the logged in user">
 				<button title="Show add or remove based on the">Add/Remove Friend</button>
 			</div>

@@ -186,8 +186,12 @@ public class Account {
                 "accountId=" + accountId +
                 ", username='" + username + '\'' +
                 ", password='" + password + '\'' +
-                ", wins='" + losses + '\'' +
+                ", wins='" + wins + '\'' +
                 ", losses='" + losses + '\'' +
                 '}';
+    }
+
+    public Account displayInformation(){
+        return new Account(accountId, username, null, wins, losses);
     }
 }
