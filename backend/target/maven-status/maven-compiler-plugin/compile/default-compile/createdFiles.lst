@@ -1,13 +1,17 @@
 com\example\entity\GamePlayer.class
+com\example\service\FriendService.class
 com\example\service\GamePlayerService.class
 com\example\entity\Account.class
 com\example\service\AccountService.class
 com\example\entity\Game.class
 com\example\repository\GamePlayerRepository.class
+com\example\enums\FriendStatus.class
 com\example\enums\Visibility.class
 com\example\repository\AccountRepository.class
+com\example\entity\Friend.class
 com\example\repository\GameRepository.class
 com\example\LiarsDiceApp.class
 com\example\service\GameService.class
 com\example\WebConfig.class
+com\example\repository\FriendRepository.class
 com\example\controller\Controller.class

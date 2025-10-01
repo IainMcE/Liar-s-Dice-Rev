@@ -2,6 +2,7 @@ import './GameList.css'
 import {MiniUser, DisplayMiniUser, hideMiniUser, useDisplayUser} from './MiniUser.js';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
+import { useLoggedInId } from './App.js';
 
 //requires integration with backend for info on games in set up (host username, number players, visibility)
 //		or list game ids then query for their info?
@@ -27,7 +28,7 @@ function GameList() {
 		</header>
 		<div>
 			{activeGames.map((gameId)=>{
-				return <TableRow gameId={gameId}/>
+				return <TableRow key={gameId.toString()} gameId={gameId}/>
 			})}
 		</div>
 	</div>
@@ -36,6 +37,7 @@ function GameList() {
 
 function TableRow(input){
 	let gameId = input.gameId;
+	const {loggedInId} = useLoggedInId();
 	const [game, setGame] = useState(null);
 	useEffect(()=>{
 		fetch(`http://localhost:8080/Game/${gameId}`)
@@ -43,8 +45,28 @@ function TableRow(input){
 			.then(data => setGame(data))
 			.catch(error => console.error('Error fetching data: ', error))
 	}, [gameId]);
+	const [hostFriend, setHostFriend] = useState(false);
+	useEffect(()=>{
+		fetch(`http://localhost:8080/Friends/${game?.host??-1}/${loggedInId}`)
+			.then(response=>{
+				if(response.status === 204 || response.headers.get("Content-Length")=== 0){
+					return null;
+				}
+				return response.json();
+			})
+			.then(data => setHostFriend(data?.status==="CONFIRMED"??false))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [game, loggedInId]);
+	//TODO return null if vis = invite and not invited (backend impl of invites?)
+	//TODO return null if vis = friends and not friends
 	if(game===null){
 		return(<div>Loading...</div>)
+	}
+	if(game.visibility === "INVITE"){
+		return null;
+	}
+	if(game.visibility === "FRIENDS" && !hostFriend){
+		return null;
 	}
 	return(
 		<div className="GameTableRow">

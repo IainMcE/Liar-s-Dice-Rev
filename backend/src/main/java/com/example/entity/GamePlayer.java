@@ -83,11 +83,11 @@ public class GamePlayer {
 	}
 
 	@Override
-    public String toString() {
-        return "GamePlayer{" +
-                "gameId=" + gameId +
-                ", playerId='" + playerId + '\'' +
-                ", diceCount='" + diceCount + '\'' +
-                '}';
-    }
+	public String toString() {
+		return "GamePlayer{" +
+				"gameId=" + gameId +
+				", playerId='" + playerId + '\'' +
+				", diceCount='" + diceCount + '\'' +
+				'}';
+	}
 }

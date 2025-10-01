@@ -104,7 +104,7 @@ function UserIcon(){
 
 const UserIconPopUp = ()=>{
 	const {loggedInId, setLoggedInId} = useLoggedInId();
-	setLoggedInId(1);
+	setLoggedInId(1)
 	let result;
 	if(loggedInId < 0){
 		result = <MiniLogin/>

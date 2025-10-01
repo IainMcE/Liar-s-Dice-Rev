@@ -21,37 +21,81 @@ function PlayerProfile(){
 			<div className="addFriend">
 				<AddFriendButton userId={id}/>
 			</div>
-			<div className="FriendListHolder" title="Only if profile is logged in user. Alternatively show mutual friends?">
+			<div className="FriendListHolder">
 				<header className="FriendListHeader">Friends</header>
 				<hr/>
 				<div className="FriendList">
-					<DisplayFriendList/>
+					<DisplayFriendList userId={id}/>
 				</div>
 			</div>
 		</div>
 	)
 }
 
-function DisplayFriendList(){
-	let list = [];
-	let result = []
-	if(list.length===0){
+function DisplayFriendList(input){
+	let userId = input.userId;
+	const {loggedInId} = useLoggedInId();
+	const [friendData, setFriendData] = useState([]);
+	useEffect(()=>{
+		fetch('http://localhost:8080/Friends/'+userId)
+			.then(response=>response.json())
+			.then(data => setFriendData(data))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [userId]);
+	if(loggedInId<0){
+		return(
+			<div className="FriendRow">Log in to see a users friends</div>
+		)
+	}else if(friendData.length===0){
 		return(
 			<div className="FriendRow">Play some games, make some friends</div>
 		)
 	}else{
-		list.map((user)=>{
-			result.push(friendListRow(user));
+		let confirmed = friendData.filter(f=>f.status==="CONFIRMED")
+		let result = confirmed.map((f)=>{
+			let friendId = f.userId1 === userId?f.userId2:f.userId1;
+			return <FriendListRow key={friendId.toString()} friendId={friendId}/>;
 		})
-		return(
-			{result}
-		)
+		if(loggedInId !== userId){
+			return(<div>
+				{result}
+			</div>)
+		}else{
+			let pendingOut = friendData.filter(f=>f.status==="PENDING"&&f.userId1===userId)
+			let resultPendingOut = pendingOut.map((f)=>{
+				let friendId = f.userId2;
+				return <FriendListRow key={friendId.toString()} friendId={friendId}/>;
+			})
+			let pendingIn = friendData.filter(f=>f.status==="PENDING"&&f.userId2===userId)
+			let resultPendingIn = pendingIn.map((f)=>{
+				let friendId = f.userId1;
+				return <FriendListRow key={friendId.toString()} friendId={friendId}/>;
+			})
+			return(
+				<div>
+					{result}
+					{resultPendingIn.length>0?<h4>Friend Requests:</h4>:null}
+					{resultPendingIn}
+					{resultPendingOut.length>0?<h4>Pending Response:</h4>:null}
+					{resultPendingOut}
+				</div>
+			)
+		}
+		
 	}
 }
 
-function friendListRow(user){//is it id? is it string?
+function FriendListRow(input){
+	let friendId = input.friendId;
+	const [playerData, setPlayerData] = useState(null);
+	useEffect(()=>{
+		fetch('http://localhost:8080/User/'+friendId)
+			.then(response=>response.json())
+			.then(data => setPlayerData(data))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [friendId]);
 	return(
-		<div className="FriendRow" title="onclick visit profile, on hover view profile snippet">{user}</div>
+		<Link className="FriendRow" to={"/User/"+friendId}>{playerData?.username??"Loading..."}</Link>
 	)
 }
 
@@ -61,9 +105,14 @@ function MiniProfile(userId){
 	const [playerData, setPlayerData] = useState(null);
 	useEffect(()=>{
 		fetch('http://localhost:8080/User/'+userId)
-			.then(response=>response.json())
+			.then(response=>{
+				if(response.status === 204 || response.headers.get("Content-Length")=== 0){
+					return null;
+				}
+				return response.json();
+			})
 			.then(data => setPlayerData(data))
-			.catch(error => console.error('Error fetching data: ', error))
+			.catch(error => console.error(userId, 'Error fetching data: ', error))
 	}, [userId]);
 	return(
 		<div className="miniUserProfile">
@@ -76,13 +125,34 @@ function MiniProfile(userId){
 }
 
 function AddFriendButton(input){
-	const {loggedInId, setLoggedInId} = useLoggedInId();
+	const {loggedInId} = useLoggedInId();
 	let userId = input.userId;
-	if(userId === loggedInId){
+	const [friendship, setFriendship] = useState(null);
+	useEffect(()=>{
+		fetch(`http://localhost:8080/Friends/${loggedInId}/${userId}`)
+			.then(response=>{
+				if(response.status === 204 || response.headers.get("Content-Length")=== 0){
+					return null;
+				}
+				return response.json();
+			})
+			.then(data => setFriendship(data))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [loggedInId, userId]);
+	if(loggedInId<0 || loggedInId === userId){
 		return(null)
+	}else if(friendship === null){
+		return(<button>Add Friend</button>)
 	}else{
-		//if(userId is in friend list)
-		return(<button>Add/Remove Friend</button>)
+		if(friendship.status === "CONFIRMED"){
+			return(<button>Remove Friend</button>)
+		}else{
+			if(friendship.userId1 === loggedInId){
+				return(<button>Accept Request</button>)
+			}else{
+				return(<button>Cancel Request</button>)
+			}
+		}
 	}
 }
 
