@@ -1,20 +1,29 @@
 import './GameScreen.css'
-//import {useState} from 'react'
+import {useState, useEffect} from 'react'
+import { useParams } from 'react-router-dom';
+import { useLoggedInId } from './App';
 
 //requires integration with backend for game info (players, dice left/player)
 
 const startingDice = 6;
 
-function GameScreen(numberPlayers = 2) {//replace with ids and dice left
-	let blocks = [];
+function GameScreen() {//replace with ids and dice left
+	let {gameId} = useParams();
+	gameId = parseInt(gameId);
+	const [players, setPlayers] = useState([]);
+	useEffect(()=>{
+		fetch(`http://localhost:8080/Game/${gameId}/Players`)
+			.then(response=>response.json())
+			.then(data => setPlayers(data))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [gameId]);
 	rollDice(startingDice);
-	for(let i = 0; i<numberPlayers; i++){
-		blocks.push(PlayerDiceInfo(startingDice));
-	}
 	return (
 	<div className="GameScreen">
 		<div className="CurrentPlayers">
-		{blocks}
+		{players.map((player)=>{
+			return <PlayerDiceInfo playerId={player.playerId} diceCount={player.diceCount}/>
+		})}
 		</div>
 		<hr/>
 		{PreviousBet()}
@@ -24,11 +33,22 @@ function GameScreen(numberPlayers = 2) {//replace with ids and dice left
 	);
 }
 
-function PlayerDiceInfo(diceLeft = 0){
+function PlayerDiceInfo(input){
+	const {loggedInId, setLoggedInId} = useLoggedInId();
+	let id = input.playerId;
+	let diceLeft = input.diceCount;
+	const [playerData, setPlayerData] = useState(null);
+	id = parseInt(id);
+	useEffect(()=>{
+		fetch('http://localhost:8080/User/'+id)
+			.then(response=>response.json())
+			.then(data => setPlayerData(data))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [id]);
 	return (
 		<div className="PlayerInfoContainer">
 			<header className="pInfoHeader">
-				This should be a username
+				{id===loggedInId?"You":(playerData?.username??"Loading...")}
 			</header>
 			<div>Dice in play:</div>
 			<img className="DiceLeft" src={"/dice/"+diceLeft+".png"} alt=""></img>

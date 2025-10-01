@@ -24,10 +24,6 @@ public class Game {
      */
 	private Integer host;
     /**
-     * The list of player ids for those playing the game
-     */
-    // private List<Integer> playerIds;
-    /**
      * A setting that controls the privacy of the game to outsiders
      */
     @Enumerated(EnumType.STRING)
@@ -90,23 +86,6 @@ public class Game {
         this.visibility = visibility;
     }
     /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @return password
-     */
-    // public List<Integer> getPlayerIds() {
-    //     return playerIds;
-    // }
-    /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @param playerIds
-     */
-    // public void setPlayerIds(List<Integer> playerIds) {
-    //     this.playerIds = new ArrayList<Integer>(playerIds);
-    // }
-	// public void addPlayerId(int playerId){
-	// 	this.playerIds.add(playerId);
-	// }
-    /**
      * Overriding the default equals() method adds functionality to tell when two objects are identical, allowing
      * Assert.assertEquals and List.contains to function.
      * @param o the other object.
@@ -126,11 +105,6 @@ public class Game {
 				return false;
 		} else if (!host.equals(other.host))
 			return false;
-		// if (playerIds == null) {
-		// 	if (other.playerIds != null)
-		// 		return false;
-		// } else if (!playerIds.equals(other.playerIds))
-		// 	return false;
 		if (visibility == null) {
 			if (other.visibility != null)
 				return false;
@@ -148,7 +122,6 @@ public class Game {
         return "Game{" +
                 "gameId=" + gameId +
                 ", host='" + host + '\'' +
-                // ", playerIds='" + playerIds.toString() + '\'' +
                 ", visibility='" + visibility.name() + '\'' +
                 '}';
     }

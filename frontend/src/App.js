@@ -34,7 +34,6 @@ function hideUserIconPopUp(){
 // }, []);
 
 function App() {
-	//const {loggedInId, setLoggedInId} = useLoggedInId();
 	return (
 		<div className="App" onClick={hideUserIconPopUp}>
 			<LoggedInIdProvider>
@@ -105,6 +104,7 @@ function UserIcon(){
 
 const UserIconPopUp = ()=>{
 	const {loggedInId, setLoggedInId} = useLoggedInId();
+	setLoggedInId(1);
 	let result;
 	if(loggedInId < 0){
 		result = <MiniLogin/>

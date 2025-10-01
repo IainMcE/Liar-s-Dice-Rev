@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import './PlayerProfile.css'
 import { useParams } from 'react-router-dom';
 import {Link} from 'react-router-dom';
+import { useLoggedInId } from './App';
 
 function PlayerProfile(){
 	const [playerData, setPlayerData] = useState(null);
@@ -17,8 +18,8 @@ function PlayerProfile(){
 		<div className="userProfile">
 			<header className="username">{playerData?.username??"Loading..."}</header>
 			<div className="GameStats">Win rate: {playerData!=null?(playerData.wins/(playerData.wins+playerData.losses)*100):0}%</div>
-			<div className="addFriend" title="If the profile is not the logged in user">
-				<button title="Show add or remove based on the">Add/Remove Friend</button>
+			<div className="addFriend">
+				<AddFriendButton userId={id}/>
 			</div>
 			<div className="FriendListHolder" title="Only if profile is logged in user. Alternatively show mutual friends?">
 				<header className="FriendListHeader">Friends</header>
@@ -39,9 +40,9 @@ function DisplayFriendList(){
 			<div className="FriendRow">Play some games, make some friends</div>
 		)
 	}else{
-		for(let user of list){
+		list.map((user)=>{
 			result.push(friendListRow(user));
-		}
+		})
 		return(
 			{result}
 		)
@@ -57,19 +58,32 @@ function friendListRow(user){//is it id? is it string?
 function MiniProfile(userId){
 	//playerData = fetch short display info by id
 	userId = userId.userId;	//why does it do this?
-	let playerData = {username:"Frank"}
-	if(userId===1){
-		playerData = {username:"Jerry (from Seinfeld)"}
-	}
+	const [playerData, setPlayerData] = useState(null);
+	useEffect(()=>{
+		fetch('http://localhost:8080/User/'+userId)
+			.then(response=>response.json())
+			.then(data => setPlayerData(data))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [userId]);
 	return(
 		<div className="miniUserProfile">
-			<Link to={"/User/"+userId} className="miniUsername">{playerData.username}</Link>
-			<div className="miniAddFriend" title="If the profile is not the logged in user">
-				<button title="Show add or remove based on the">Add/Remove Friend</button>
+			<Link to={"/User/"+userId} className="miniUsername">{playerData?.username??"Loading..."}</Link>
+			<div className="miniAddFriend">
+				<AddFriendButton userId={userId}/>
 			</div>
-			{/* some navigation to the full profile (id) */}
 		</div>
 	)
+}
+
+function AddFriendButton(input){
+	const {loggedInId, setLoggedInId} = useLoggedInId();
+	let userId = input.userId;
+	if(userId === loggedInId){
+		return(null)
+	}else{
+		//if(userId is in friend list)
+		return(<button>Add/Remove Friend</button>)
+	}
 }
 
 export {MiniProfile};

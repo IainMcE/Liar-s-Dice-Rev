@@ -11,7 +11,7 @@ import com.example.entity.Game;
 
 public interface GameRepository extends JpaRepository<Game, Long>{
 	public List<Game> findAll();
-	@Query("Select g.gameId FROM Game g")
+	@Query("SELECT g.gameId FROM Game g")
 	public List<Integer> getGameIds();
 	public boolean existsByGameId(int gameId);
 	public Optional<Game> findByGameId(int gameId);

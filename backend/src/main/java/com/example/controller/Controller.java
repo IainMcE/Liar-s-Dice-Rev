@@ -11,6 +11,8 @@ import com.example.service.AccountService;
 import com.example.entity.Account;
 import com.example.service.GameService;
 import com.example.entity.Game;
+import com.example.service.GamePlayerService;
+import com.example.entity.GamePlayer;
 
 
 @RestController
@@ -19,6 +21,8 @@ public class Controller{
 	AccountService accountService;
 	@Autowired
 	GameService gameService;
+	@Autowired
+	GamePlayerService gamePlayerService;
 
 	@PostMapping("/SignUp")
 	public ResponseEntity<Account> createAccount(@RequestBody Account newAcc){
@@ -65,5 +69,12 @@ public class Controller{
 			return ResponseEntity.status(200).body(gameService.getGameById(gameId));
 		}
 		return ResponseEntity.status(200).body(null);
+	}
+
+	@GetMapping("/Game/{gameId}/Players")
+	public ResponseEntity<List<GamePlayer>> getPlayers(
+		@PathVariable("gameId") int gameId
+	){
+		return ResponseEntity.status(200).body(gamePlayerService.getPlayersByGameId(gameId));
 	}
 }
