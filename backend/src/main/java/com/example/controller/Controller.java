@@ -55,7 +55,15 @@ public class Controller{
 	//get mapping /users/accountId/gameHistory | history
 
 	@GetMapping("/GameList")
-	public ResponseEntity<List<Game>> getGames(){
-		return ResponseEntity.status(200).body(gameService.getGames());
+	public ResponseEntity<List<Integer>> getGameIds(){
+		return ResponseEntity.status(200).body(gameService.getGameIds());
+	}
+
+	@GetMapping("/Game/{gameId}")
+	public ResponseEntity<Game> getGame(@PathVariable("gameId") int gameId){
+		if(gameService.hasGameWithId(gameId)){
+			return ResponseEntity.status(200).body(gameService.getGameById(gameId));
+		}
+		return ResponseEntity.status(200).body(null);
 	}
 }

@@ -63,6 +63,20 @@ public class Game {
     }
     /**
      * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
+     * @return host
+     */
+    public Integer getHost() {
+        return host;
+    }
+    /**
+     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
+     * @param host
+     */
+    public void setHost(Integer host) {
+        this.host = host;
+    }
+    /**
+     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
      * @return username
      */
     public Visibility getVisibility() {

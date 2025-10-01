@@ -38,9 +38,7 @@ function PlayerDiceInfo(diceLeft = 0){
 }
 
 function PreviousBet(count = 0, size = 0){
-	console.log("hit");
 	let displayText = count === 0 || size === 0;//both should be >1 if a valid guess was made
-	console.log(displayText)
 	if(displayText){
 		return (
 			<div className="prevCall">

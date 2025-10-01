@@ -12,7 +12,7 @@ function PlayerProfile(){
 			.then(response=>response.json())
 			.then(data => setPlayerData(data))
 			.catch(error => console.error('Error fetching data: ', error))
-	}, []);
+	}, [id]);
 	return(
 		<div className="userProfile">
 			<header className="username">{playerData?.username??"Loading..."}</header>
