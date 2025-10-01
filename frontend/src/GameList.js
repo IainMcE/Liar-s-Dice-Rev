@@ -39,27 +39,28 @@ function TableRow(input){
 	let gameId = input.gameId;
 	const {loggedInId} = useLoggedInId();
 	const [game, setGame] = useState(null);
+	const [hostFriend, setHostFriend] = useState(null);
 	useEffect(()=>{
-		fetch(`http://localhost:8080/Game/${gameId}`)
-			.then(response=>response.json())
-			.then(data => setGame(data))
-			.catch(error => console.error('Error fetching data: ', error))
-	}, [gameId]);
-	const [hostFriend, setHostFriend] = useState(false);
-	useEffect(()=>{
-		fetch(`http://localhost:8080/Friends/${game?.host??-1}/${loggedInId}`)
-			.then(response=>{
-				if(response.status === 204 || response.headers.get("Content-Length")=== 0){
-					return null;
+		const fetching = async () =>{
+			try{
+				const gameResponse = await fetch(`http://localhost:8080/Game/${gameId}`);
+				const gameResult = await gameResponse.json();
+				setGame(gameResult);
+				
+				const hostResponse = await fetch(`http://localhost:8080/Friends/${gameResult.host}/${loggedInId}`);
+				if(hostResponse.status === 200){
+					const hostResult = await hostResponse.json();
+					setHostFriend(hostResult.status==="CONFIRMED");
+				}else{
+					setHostFriend(false);
 				}
-				return response.json();
-			})
-			.then(data => setHostFriend(data?.status==="CONFIRMED"??false))
-			.catch(error => console.error('Error fetching data: ', error))
-	}, [game, loggedInId]);
-	//TODO return null if vis = invite and not invited (backend impl of invites?)
-	//TODO return null if vis = friends and not friends
-	if(game===null){
+			}catch(error){
+				console.error('Error fetching data: ', error)
+			}
+		}
+		fetching();
+	}, [gameId, loggedInId]);
+	if(game===null || hostFriend == null){
 		return(<div>Loading...</div>)
 	}
 	if(game.visibility === "INVITE"){
@@ -71,7 +72,7 @@ function TableRow(input){
 	return(
 		<div className="GameTableRow">
 			<HostName hostId={game.host}/>
-			<div className="playerCountColumn">{1}</div>
+			<PlayerCount gameId={gameId}/>
 			<div className="visibilityColumn">{game.visibility}</div>
 			<JoinButton gameId={gameId}/>
 			<div className="spectateColumn">
@@ -102,6 +103,23 @@ function HostName(input){
 			{host?host.username:""}
 			{/* fix vertical spacing, also on scroll*/}
 		</div>
+	)
+}
+
+function PlayerCount(input){
+	let gameId = input.gameId;
+	let [count, setCount] = useState(null);
+	useEffect(()=>{
+		fetch(`http://localhost:8080/Game/${gameId}/Players`)
+			.then(response=>response.json())
+			.then(data => setCount(data.length))
+			.catch(error => console.error('Error fetching data: ', error))
+	}, [gameId]);
+	if(count === null){
+		return(<div className="playerCountColumn">-</div>)
+	}
+	return(
+		<div className="playerCountColumn">{count}</div>
 	)
 }
 

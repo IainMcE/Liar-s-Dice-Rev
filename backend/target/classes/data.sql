@@ -43,9 +43,9 @@ insert into account values(4, 'Terrence', 'password', 4, 1);
 insert into account values(5, 'Ollie', 'password', 0, 1);
 
 insert into game values(1, 1, 'PUBLIC');
-insert into game values(3, 4, 'FRIENDS');	-- implement friend list to handle appearance
-insert into game values(5, 4, 'INVITE');	-- TODO should not appear
-insert into game values(2, 5, 'FRIENDS');	-- TODO should not appear
+insert into game values(3, 4, 'FRIENDS');
+insert into game values(5, 4, 'INVITE');	-- implement invite system
+insert into game values(2, 5, 'FRIENDS');
 
 insert into gamePlayer values(1, 1, 1, 6);
 insert into gamePlayer values(2, 1, 2, 6);
