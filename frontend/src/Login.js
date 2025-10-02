@@ -78,6 +78,13 @@ function LoginForm({children}){
 	let {setLoginError} = useLoginError();
 	let {setLoggedInId} = useLoggedInId();
 
+	function KeyHandle(e){
+		if(e.key === "Enter"){
+			e.preventDefault();
+			document.querySelector('.LoginForm input[type="submit"]').click();
+		}
+	}
+
 	function HandleLogin(e){
 		e.preventDefault();
 		//get username
@@ -105,7 +112,7 @@ function LoginForm({children}){
 	}
 
 	return(
-		<form className="LoginForm" onSubmit={HandleLogin}>
+		<form className="LoginForm" onSubmit={HandleLogin} onKeyDown={KeyHandle}>
 			{children}
 			<LoginError/>
 			<input type="submit"/>

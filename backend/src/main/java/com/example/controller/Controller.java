@@ -107,7 +107,6 @@ public class Controller{
 
 	@PostMapping("/Friends/Initiate")
 	public ResponseEntity<Friend> requestFriend(@RequestBody Friend friend){
-		System.out.println(friend);
 		if(friendService.friendStatus(friend.getUserId1(), friend.getUserId2()) != null){
 			return ResponseEntity.status(204).body(null);
 		}

@@ -45,6 +45,13 @@ function SignUpForm(){
 	let {setSignUpError} = useSignUpError();
 	let {setLoggedInId} = useLoggedInId();
 
+	function KeyHandle(e){
+		if(e.key === "Enter"){
+			e.preventDefault();
+			document.querySelector('.SignUpForm input[type="submit"]').click();
+		}
+	}
+
 	function HandleSignUp(e){
 		e.preventDefault();
 		//get username
@@ -86,7 +93,7 @@ function SignUpForm(){
 	}
 
 	return(
-		<form className="SignUpForm" onSubmit={HandleSignUp}>
+		<form className="SignUpForm" onSubmit={HandleSignUp} onKeyDown={KeyHandle}>
 			<div>
 				<div>
 					<label htmlFor="signUpUsername">Username:</label>

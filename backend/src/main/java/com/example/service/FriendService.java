@@ -34,9 +34,7 @@ public class FriendService{
 	}
 
 	public Friend addFriend(Friend friend){
-		System.out.println(friend);
 		friend.setStatus(FriendStatus.PENDING);
-		System.out.println(friend);
 		return friendRepository.save(friend);
 	}
 

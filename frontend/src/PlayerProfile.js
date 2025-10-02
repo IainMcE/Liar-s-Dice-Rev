@@ -162,7 +162,8 @@ function AddFriendButton(input){
 		console.log(friendship?.status??null, post, friend)
 		axios.post(post, friend).then((response)=>{
 			if(response.status === 200){
-				if(response.data.length > 0){
+				if((typeof(response.data)==="string" && response.data.length > 0)
+					|| typeof(response.data)==="object"){
 					setFriendship(response.data);
 				}else{
 					setFriendship(null);

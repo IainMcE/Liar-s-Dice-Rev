@@ -28,21 +28,21 @@ public class Friend {
 		this.status = status;
 	}
 
-	public int getfriendId(){
+	public Integer getFriendId(){
 		return friendId;
 	}
-	public void setfriendId(int friendId){
+	public void setFriendId(int friendId){
 		this.friendId = friendId;
 	}
 
-	public int getUserId1(){
+	public Integer getUserId1(){
 		return userId1;
 	}
 	public void setUserId1(int userId1){
 		this.userId1 = userId1;
 	}
 
-	public int getUserId2(){
+	public Integer getUserId2(){
 		return userId2;
 	}
 	public void setUserId2(int userId2){
@@ -87,8 +87,8 @@ public class Friend {
 	public String toString() {
 		return "Friend{" +
 				"friendId=" + friendId +
-				", userId1=" + userId1 + '\'' +
-				", userId2='" + userId2 + '\'' +
+				", userId1=" + userId1 +
+				", userId2=" + userId2 +
 				", status='" + status + '\'' +
 				'}';
 	}
