@@ -16,6 +16,7 @@ import com.example.service.GamePlayerService;
 import com.example.entity.GamePlayer;
 import com.example.service.FriendService;
 import com.example.entity.Friend;
+import com.example.enums.FriendStatus;
 
 
 @RestController
@@ -38,7 +39,7 @@ public class Controller{
 		if(accountService.hasAccountWithUsername(newAcc.getUsername())){
 			return ResponseEntity.status(401).body(null);
 		}
-		System.out.println("acc id: "+newAcc.getAccountId());
+		
 		return ResponseEntity.status(200).body(accountService.addAccount(newAcc));
 	}
 
@@ -83,15 +84,8 @@ public class Controller{
 		return ResponseEntity.status(200).body(gamePlayerService.getPlayersByGameId(gameId));
 	}
 
-	@GetMapping("/User/{userId}/Friends")
-	public ResponseEntity<List<Friend>> getFriends1(
-		@PathVariable("userId") int userId
-	){
-		return ResponseEntity.status(200).body(friendService.friendList(userId));
-	}
-
-	@GetMapping("/Friends/{userId}")
-	public ResponseEntity<List<Friend>> getFriends2(
+	@GetMapping({"/User/{userId}/Friends", "/Friends/{userId}"})
+	public ResponseEntity<List<Friend>> getFriends(
 		@PathVariable("userId") int userId
 	){
 		return ResponseEntity.status(200).body(friendService.friendList(userId));
@@ -109,5 +103,33 @@ public class Controller{
 			}
 		}
 		return ResponseEntity.status(204).body(null);
+	}
+
+	@PostMapping("/Friends/Initiate")
+	public ResponseEntity<Friend> requestFriend(@RequestBody Friend friend){
+		System.out.println(friend);
+		if(friendService.friendStatus(friend.getUserId1(), friend.getUserId2()) != null){
+			return ResponseEntity.status(204).body(null);
+		}
+		return ResponseEntity.status(200).body(friendService.addFriend(friend));
+	}
+
+	@PostMapping("/Friends/Accept")
+	public ResponseEntity<Friend> acceptFriend(@RequestBody Friend friend){
+		Friend currentFriend = friendService.friendStatus(friend.getUserId1(), friend.getUserId2());
+		if(currentFriend == null || currentFriend.getStatus() != FriendStatus.PENDING){
+			return ResponseEntity.status(204).body(null);
+		}
+		return ResponseEntity.status(200).body(friendService.acceptFriend(currentFriend));
+	}
+
+	@PostMapping("/Friends/Remove")
+	public ResponseEntity<Friend> removeFriend(@RequestBody Friend friend){
+		Friend currentFriend = friendService.friendStatus(friend.getUserId1(), friend.getUserId2());
+		if(currentFriend == null){
+			return ResponseEntity.status(204).body(null);
+		}
+		friendService.removeFriend(currentFriend);
+		return ResponseEntity.status(200).body(null);
 	}
 }

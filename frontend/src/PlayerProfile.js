@@ -3,6 +3,7 @@ import './PlayerProfile.css'
 import { useParams } from 'react-router-dom';
 import {Link} from 'react-router-dom';
 import { useLoggedInId } from './App';
+import axios from 'axios';
 
 function PlayerProfile(){
 	const [playerData, setPlayerData] = useState(null);
@@ -139,21 +140,50 @@ function AddFriendButton(input){
 			.then(data => setFriendship(data))
 			.catch(error => console.error('Error fetching data: ', error))
 	}, [loggedInId, userId]);
+
+	function AddFriendPressed(){
+		let friend = {userId1: loggedInId, userId2: userId}
+		let post = 'http://localhost:8080/Friends/'
+		switch(friendship?.status??null){
+			case "CONFIRMED":
+				post += 'Remove'
+				break;
+			case "PENDING":
+				if(friendship.userId1 === loggedInId){
+					post += 'Remove';
+				}else{
+					post += 'Accept';
+				}
+				break;
+			default:
+				post += 'Initiate';
+				break;
+		}
+		console.log(friendship?.status??null, post, friend)
+		axios.post(post, friend).then((response)=>{
+			if(response.status === 200){
+				if(response.data.length > 0){
+					setFriendship(response.data);
+				}else{
+					setFriendship(null);
+				}
+			}
+		}).catch((error)=>{console.error(error)});
+	}
+
 	if(loggedInId<0 || loggedInId === userId){
 		return(null)
-	}else if(friendship === null){
-		return(<button>Add Friend</button>)
-	}else{
-		if(friendship.status === "CONFIRMED"){
-			return(<button>Remove Friend</button>)
-		}else{
-			if(friendship.userId1 === loggedInId){
-				return(<button>Accept Request</button>)
-			}else{
-				return(<button>Cancel Request</button>)
-			}
-		}
 	}
+	if(friendship === null){
+		return(<button onClick={AddFriendPressed}>Add Friend</button>)
+	}
+	if(friendship.status === "CONFIRMED"){
+		return(<button onClick={AddFriendPressed}>Remove Friend</button>)
+	}
+	if(friendship.userId1 === loggedInId){
+		return(<button onClick={AddFriendPressed}>Cancel Request</button>)
+	}
+	return(<button onClick={AddFriendPressed}>Accept Request</button>)
 }
 
 export {MiniProfile};

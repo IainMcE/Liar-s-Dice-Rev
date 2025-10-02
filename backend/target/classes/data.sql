@@ -24,7 +24,7 @@ create table gamePlayer (
 	foreign key (playerId) references account(accountId)
 );
 create table friend(
-	entryId int primary key auto_increment,
+	friendId int primary key auto_increment,
 	userId1 int,
 	userId2 int,
 	status varchar(10),
@@ -34,26 +34,25 @@ create table friend(
 );
 
 
-insert into account values(10, 'Jimmy', 'password', 1, 4);
-insert into account values(2, 'Frank', 'password', 2, 3);
-insert into account values(3, 'Eliza', 'password', 3, 2);
-insert into account values(4, 'Terrence', 'password', 4, 1);
-insert into account values(5, 'Ollie', 'password', 0, 1);
-alter table account alter column accountId restart with 10;
+insert into account values(11, 'Jimmy', 'password', 1, 4);
+insert into account values(12, 'Frank', 'password', 2, 3);
+insert into account values(13, 'Eliza', 'password', 3, 2);
+insert into account values(14, 'Terrence', 'password', 4, 1);
+insert into account values(15, 'Ollie', 'password', 0, 1);
 
-insert into game values(1, 10, 'PUBLIC');
-insert into game values(3, 4, 'FRIENDS');
-insert into game values(5, 4, 'INVITE');	-- implement invite system
-insert into game values(2, 5, 'FRIENDS');
+insert into game values(11, 11, 'PUBLIC');
+insert into game values(13, 14, 'FRIENDS');
+insert into game values(15, 14, 'INVITE');	-- implement invite system
+insert into game values(12, 15, 'FRIENDS');
 
-insert into gamePlayer values(1, 1, 10, 6);
-insert into gamePlayer values(2, 1, 2, 6);
-insert into gamePlayer values(3, 1, 3, 6);
-insert into gamePlayer values(4, 1, 4, 6);
-insert into gamePlayer values(5, 2, 5, 6);
-insert into gamePlayer values(6, 2, 10, 6);
+insert into gamePlayer values(11, 11, 11, 6);
+insert into gamePlayer values(12, 11, 12, 6);
+insert into gamePlayer values(13, 11, 13, 6);
+insert into gamePlayer values(14, 11, 14, 6);
+insert into gamePlayer values(15, 12, 15, 6);
+insert into gamePlayer values(16, 12, 11, 6);
 
-insert into friend values(1, 10, 2, 'CONFIRMED');
-insert into friend values(2, 3, 10, 'PENDING');
-insert into friend values(3, 10, 4, 'PENDING');
-insert into friend values(4, 5, 10, 'CONFIRMED');
+insert into friend values(11, 11, 12, 'CONFIRMED');
+insert into friend values(12, 13, 11, 'PENDING');
+insert into friend values(13, 11, 14, 'PENDING');
+insert into friend values(14, 15, 11, 'CONFIRMED');

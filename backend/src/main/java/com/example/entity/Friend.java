@@ -6,28 +6,33 @@ import com.example.enums.FriendStatus;
 @Entity
 @Table(name="friend")
 public class Friend {
-	@Column(name="entryId")
+	@Column(name="friendId")
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private Integer entryId;
+	private Integer friendId;
 	private Integer userId1;
 	private Integer userId2;
 	@Enumerated(EnumType.STRING)
     private FriendStatus status;
 
 	public Friend(){}
-	public Friend(int entryId, int userId1, int userId2, FriendStatus status){
-		this.entryId = entryId;
+	public Friend(int userId1, int userId2){
+		this.userId1 = userId1;
+		this.userId2 = userId2;
+		this.status = FriendStatus.PENDING;
+	}
+	public Friend(int friendId, int userId1, int userId2, FriendStatus status){
+		this.friendId = friendId;
 		this.userId1 = userId1;
 		this.userId2 = userId2;
 		this.status = status;
 	}
 
-	public int getEntryId(){
-		return entryId;
+	public int getfriendId(){
+		return friendId;
 	}
-	public void setEntryId(int entryId){
-		this.entryId = entryId;
+	public void setfriendId(int friendId){
+		this.friendId = friendId;
 	}
 
 	public int getUserId1(){
@@ -81,7 +86,8 @@ public class Friend {
 	@Override
 	public String toString() {
 		return "Friend{" +
-				"userId1=" + userId1 +
+				"friendId=" + friendId +
+				", userId1=" + userId1 + '\'' +
 				", userId2='" + userId2 + '\'' +
 				", status='" + status + '\'' +
 				'}';

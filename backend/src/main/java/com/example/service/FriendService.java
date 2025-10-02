@@ -32,4 +32,20 @@ public class FriendService{
 	public List<Friend> friendList(int userId){
 		return friendRepository.findByUserId1OrUserId2(userId, userId);
 	}
+
+	public Friend addFriend(Friend friend){
+		System.out.println(friend);
+		friend.setStatus(FriendStatus.PENDING);
+		System.out.println(friend);
+		return friendRepository.save(friend);
+	}
+
+	public Friend acceptFriend(Friend friend){
+		friend.setStatus(FriendStatus.CONFIRMED);
+		return friendRepository.save(friend);
+	}
+
+	public void removeFriend(Friend friend){
+		friendRepository.delete(friend);
+	}
 }
