@@ -75,3 +75,10 @@
 .passwordVisibility{
 	width: 116px;
 }
+
+.errorText{
+	color:red;
+	justify-content: center;
+	font-weight: bold;
+	height:1em;
+}

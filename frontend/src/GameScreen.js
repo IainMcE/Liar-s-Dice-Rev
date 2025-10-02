@@ -34,7 +34,7 @@ function GameScreen() {//replace with ids and dice left
 }
 
 function PlayerDiceInfo(input){
-	const {loggedInId, setLoggedInId} = useLoggedInId();
+	const {loggedInId} = useLoggedInId();
 	let id = input.playerId;
 	let diceLeft = input.diceCount;
 	const [playerData, setPlayerData] = useState(null);

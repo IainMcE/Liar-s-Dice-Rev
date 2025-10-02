@@ -36,9 +36,9 @@ public class Controller{
 		}
 
 		if(accountService.hasAccountWithUsername(newAcc.getUsername())){
-			return ResponseEntity.status(400).body(null);
+			return ResponseEntity.status(401).body(null);
 		}
-
+		System.out.println("acc id: "+newAcc.getAccountId());
 		return ResponseEntity.status(200).body(accountService.addAccount(newAcc));
 	}
 

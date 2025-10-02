@@ -8,13 +8,11 @@ create table account (
 	password varchar(255),
 	wins int,
 	losses int
-	-- friend list
 );
 create table game (
 	gameId int primary key auto_increment,
 	host int,
 	visibility varchar(10)
-	-- players
 );
 create table gamePlayer (
 	entryId int primary key auto_increment,
@@ -36,25 +34,26 @@ create table friend(
 );
 
 
-insert into account values(1, 'Jimmy', 'password', 1, 4);
+insert into account values(10, 'Jimmy', 'password', 1, 4);
 insert into account values(2, 'Frank', 'password', 2, 3);
 insert into account values(3, 'Eliza', 'password', 3, 2);
 insert into account values(4, 'Terrence', 'password', 4, 1);
 insert into account values(5, 'Ollie', 'password', 0, 1);
+alter table account alter column accountId restart with 10;
 
-insert into game values(1, 1, 'PUBLIC');
+insert into game values(1, 10, 'PUBLIC');
 insert into game values(3, 4, 'FRIENDS');
 insert into game values(5, 4, 'INVITE');	-- implement invite system
 insert into game values(2, 5, 'FRIENDS');
 
-insert into gamePlayer values(1, 1, 1, 6);
+insert into gamePlayer values(1, 1, 10, 6);
 insert into gamePlayer values(2, 1, 2, 6);
 insert into gamePlayer values(3, 1, 3, 6);
 insert into gamePlayer values(4, 1, 4, 6);
 insert into gamePlayer values(5, 2, 5, 6);
-insert into gamePlayer values(6, 2, 1, 6);
+insert into gamePlayer values(6, 2, 10, 6);
 
-insert into friend values(1, 1, 2, 'CONFIRMED');
-insert into friend values(2, 3, 1, 'PENDING');
-insert into friend values(3, 1, 4, 'PENDING');
-insert into friend values(4, 5, 1, 'CONFIRMED');
+insert into friend values(1, 10, 2, 'CONFIRMED');
+insert into friend values(2, 3, 10, 'PENDING');
+insert into friend values(3, 10, 4, 'PENDING');
+insert into friend values(4, 5, 10, 'CONFIRMED');
