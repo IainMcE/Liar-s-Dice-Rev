@@ -14,7 +14,7 @@ function GameLobby(){
 	let navigate = useNavigate();
 
 	function startGame(){
-		axios.post('http://localhost:8080/Game/Start', gameId)
+		axios.post('http://localhost:8080/Game/Start', {gameId:gameId})
 			.then((response)=>{
 				if(response.status===200){
 					navigate(`/GameScreen/${gameId}`);

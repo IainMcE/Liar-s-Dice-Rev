@@ -182,11 +182,9 @@ public class Controller{
 	}
 
 	@PostMapping("/Game/Start")
-	public ResponseEntity<Game> startGame(@RequestBody Integer id){
-		if(id == null){
-			return ResponseEntity.status(400).body(null);
-		}
-		Game game = gameService.getGameById(id);
+	public ResponseEntity<Game> startGame(@RequestBody Game game){
+		game = gameService.getGameById(game.getGameId());
+		System.out.println(game);
 		if(game == null){
 			return ResponseEntity.status(400).body(null);
 		}
