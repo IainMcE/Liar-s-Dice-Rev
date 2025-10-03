@@ -1,0 +1,77 @@
+.GameLobby{
+	height:100%;
+	width:100%;
+}
+
+.PlayerViews{
+	position: absolute;
+    left: 0;
+    width: 60%;
+    height: 100%;
+    display: flex;
+    flex-wrap: wrap;
+	justify-content: space-around;
+	align-content: flex-start;
+	overflow-y: auto;
+}
+
+.PlayerHeader{
+	position:sticky;
+	top:0;
+	font-size: 2em;
+	width:100%;
+	background-color: white;
+}
+
+.LeaveGame{
+	position: absolute;
+    bottom: 1vh;
+    font-size: 2em;
+    padding: 0 5%;
+}
+
+.PlayerView{
+	border: 1px solid black;
+	box-sizing: border-box;
+	width: 30%;
+	height: 15%;
+	margin: 5% 0;
+	font-size: 2em;
+}
+
+.isHost{
+	margin:5%;
+	font-style: italic;
+}
+
+.RightSide{
+	position:absolute;
+	right:0;
+	width:34%;
+	height:100%;
+	font-size: 2em;
+	display:flex;
+	flex-direction: column;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.StartGame{
+	font-size:1.25em;
+	padding: 5% 7.5%;
+}
+
+.Settings{
+	width:100%;
+}
+
+.Settings select{
+	font-size: 1em;
+	margin-left:2.5%;
+}
+
+.Invite{
+	box-sizing: border-box;
+	border: 1px black solid;
+	width:100%;
+}

@@ -5,92 +5,66 @@ import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
 import com.example.enums.Visibility;
+import com.example.enums.GameState;
 
-/**
- * This is a class that models a Game.
- */
 @Entity
 @Table(name="game")
 public class Game {
-    /**
-     * An id for this Game. You should use this as the Entity's ID.
-     */
-    @Column(name="gameId")
-    @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer gameId;
-	/**
-     * The host's id
-     */
+	@Column(name="gameId")
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private Integer gameId;
 	private Integer host;
-    /**
-     * A setting that controls the privacy of the game to outsiders
-     */
-    @Enumerated(EnumType.STRING)
-    private Visibility visibility;
-    /**
-     * A default, no-args constructor, as well as correctly formatted getters and setters, are needed for
-     * Jackson Objectmapper to work.
-     */
-    public Game(){
+	private Integer currentPlayer;
+	@Enumerated(EnumType.STRING)
+	private Visibility visibility;
+	@Enumerated(EnumType.STRING)
+	private GameState gameState;
+
+	public Game(){
 		
-    }
-    /**
-     * The initialization of a Game with a provided user id, adding them to the list of players
-     */
-    public Game(int host){
-        this.host = host;
-		// this.playerIds = new ArrayList<Integer>(Arrays.asList(host));
-		this.visibility = Visibility.INVITE;
-    }
-    /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @return gameId
-     */
-    public Integer getGameId() {
-        return gameId;
-    }
-    /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @param gameId
-     */
-    public void setGameId(Integer gameId) {
-        this.gameId = gameId;
-    }
-    /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @return host
-     */
-    public Integer getHost() {
-        return host;
-    }
-    /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @param host
-     */
-    public void setHost(Integer host) {
-        this.host = host;
-    }
-    /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @return username
-     */
-    public Visibility getVisibility() {
-        return visibility;
-    }
-    /**
-     * Properly named getters and setters are necessary for Jackson ObjectMapper to work. You may use them as well.
-     * @param visibility
-     */
-    public void setVisibility(Visibility visibility) {
-        this.visibility = visibility;
-    }
-    /**
-     * Overriding the default equals() method adds functionality to tell when two objects are identical, allowing
-     * Assert.assertEquals and List.contains to function.
-     * @param o the other object.
-     * @return true if o is equal to this object.
-     */
+	}
+	public Game(int host){
+		this.host = host;
+		this.visibility = Visibility.PUBLIC;
+		this.gameState = GameState.CREATING;
+	}
+
+	public Integer getGameId() {
+		return gameId;
+	}
+	public void setGameId(Integer gameId) {
+		this.gameId = gameId;
+	}
+
+	public Integer getHost() {
+		return host;
+	}
+	public void setHost(Integer host) {
+		this.host = host;
+	}
+
+	public Integer getCurrentPlayer() {
+		return currentPlayer;
+	}
+	public void setCurrentPlayer(Integer currentPlayer) {
+		this.currentPlayer = currentPlayer;
+	}
+
+	public Visibility getVisibility() {
+		return visibility;
+	}
+	public void setVisibility(Visibility visibility) {
+		this.visibility = visibility;
+	}
+
+	public GameState getGameState(){
+		return gameState;
+	}
+	public void setGameState(GameState gameState){
+		this.gameState = gameState;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -113,16 +87,12 @@ public class Game {
 		return true;
 	}
 
-    /**
-     * Overriding the default toString() method allows for easy debugging.
-     * @return a String representation of this class.
-     */
-    @Override
-    public String toString() {
-        return "Game{" +
-                "gameId=" + gameId +
-                ", host='" + host + '\'' +
-                ", visibility='" + visibility.name() + '\'' +
-                '}';
-    }
+	@Override
+	public String toString() {
+		return "Game{" +
+				"gameId=" + gameId +
+				", host='" + host + '\'' +
+				", visibility='" + visibility.name() + '\'' +
+				'}';
+	}
 }

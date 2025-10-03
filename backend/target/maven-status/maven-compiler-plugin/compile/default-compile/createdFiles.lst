@@ -9,6 +9,7 @@ com\example\enums\FriendStatus.class
 com\example\enums\Visibility.class
 com\example\repository\AccountRepository.class
 com\example\entity\Friend.class
+com\example\enums\GameState.class
 com\example\repository\GameRepository.class
 com\example\LiarsDiceApp.class
 com\example\service\GameService.class

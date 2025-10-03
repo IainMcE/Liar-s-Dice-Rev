@@ -11,4 +11,5 @@ import com.example.entity.GamePlayer;
 
 public interface GamePlayerRepository extends JpaRepository<GamePlayer, Long>{
 	public List<GamePlayer> findByGameId(int gameId);
+	public GamePlayer findByGameIdAndPlayerId(int gameId, int playerId);
 }

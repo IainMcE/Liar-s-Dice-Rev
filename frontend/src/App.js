@@ -1,5 +1,5 @@
 import './App.css';
-import {BrowserRouter as Router, Route, Link, Routes, useLocation} from 'react-router-dom';
+import {BrowserRouter as Router, Route, Link, Routes, useLocation, useNavigate} from 'react-router-dom';
 import GameScreen from './GameScreen.js';
 import GameList from './GameList.js';
 import PlayerProfile, {MiniProfile} from './PlayerProfile.js'
@@ -7,6 +7,8 @@ import Login, {MiniLogin} from './Login.js'
 import SignUp from './SignUp.js'
 import { createContext, useContext, useState } from 'react';
 import { DisplayUserProvider } from './MiniUser.js';
+import GameLobby from './GameLobby.js';
+import axios from 'axios';
 
 const LoggedInIdContext = createContext();
 
@@ -26,13 +28,6 @@ function hideUserIconPopUp(){
 	elStyle.visibility = "hidden";
 }
 
-// useEffect(() => {
-// 	fetch('/api/data')
-// 		.then(response => response.json())
-// 		.then(data => setData(data))
-// 		.catch(error => console.error('Error fetching data:', error));
-// }, []);
-
 function App() {
 	return (
 		<div className="App" onClick={hideUserIconPopUp}>
@@ -48,13 +43,12 @@ function App() {
 						<Route path="/GameList" element={<DisplayUserProvider><GameList/></DisplayUserProvider>}/>
 						<Route path="/Login" element={<Login/>}/>
 						<Route path="/SignUp" element={<SignUp/>}/>
+						<Route path="/GameLobby/:gameId" element={<GameLobby/>}/>
 						<Route path="/GameScreen/:gameId" element={<GameScreen/>}/>
 						<Route path="/User/:id" element={<PlayerProfile/>}/>
 					</Routes>
 				</div>
-				{/* create game button, link to game screen, pos bottom right? 
-				conditional visibility? ie not visible on game screen or login/sign up?
-				also onclick if logged in go to create, else bring up login/sign up*/}
+				<CreateGameButton/>
 				<div className="UserIconPopUp">
 					<UserIconPopUp/>
 				</div>
@@ -64,7 +58,7 @@ function App() {
 	);
 }
 
-function Missing(){		//replace with a homepage
+function Missing(){		//TODO replace with a homepage
 	return(
 		<h2>Page Not Found</h2>
 	)
@@ -115,6 +109,46 @@ const UserIconPopUp = ()=>{
 			{result}
 		</div>
 	)
+}
+
+function CreateGameButton(){
+	const location = useLocation();
+	const path = location.pathname;
+	const {loggedInId} = useLoggedInId();
+	let navigate = useNavigate();
+
+	//onclick create game, nav to gamelobby
+	function createGame(){
+		axios.post('http://localhost:8080/Game/Create', {
+			host:loggedInId
+		}).then((response)=>{
+			if(response.status === 200){
+				navigate(`/GameLobby/${response.data.gameId}`);
+			}
+		}).catch((error)=>{
+			console.error(error);
+			alert("There was an error creating the game");
+		})
+	}
+
+	if(loggedInId<0){
+		return null;
+	}
+	let validPaths = [/\/GameList/gm, /\/User\/\d+/gm, /^\/$/]
+	let isValid = false
+	for(let vPath of validPaths){
+		if(vPath.test(path)){
+			isValid = true;
+		}
+	}
+	if(isValid){
+		return(
+			<div className="CreateGameButton" onClick={createGame}>
+				+
+			</div>
+		)
+	}
+	return null;
 }
 
 export default App;

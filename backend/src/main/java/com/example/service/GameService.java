@@ -9,6 +9,8 @@ import java.util.Optional;
 
 import com.example.entity.Game;
 import com.example.repository.GameRepository;
+import com.example.enums.GameState;
+import com.example.enums.Visibility;
 
 @Service
 public class GameService{
@@ -33,5 +35,32 @@ public class GameService{
             return matching.get();
         }
         return null;
+	}
+
+	public Game createGame(Game game){
+		return gameRepository.save(game);
+	}
+
+	public Game saveGame(Game game){
+		return gameRepository.save(game);
+	}
+
+	public void deleteGame(Game game){
+		gameRepository.delete(game);
+	}
+
+	public Game setState(Game game, GameState state){
+		game.setGameState(state);
+		return game;
+	}
+
+	public Game setVisibility(Game game, Visibility visibility){
+		game.setVisibility(visibility);
+		return gameRepository.save(game);
+	}
+
+	public Game setHost(Game game, Integer host){
+		game.setHost(host);
+		return gameRepository.save(game);
 	}
 }

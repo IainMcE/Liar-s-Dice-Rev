@@ -9,6 +9,7 @@ C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\sr
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\service\FriendService.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\repository\GamePlayerRepository.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\LiarsDiceApp.java
+C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\enums\GameState.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\entity\Game.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\service\AccountService.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\entity\Account.java

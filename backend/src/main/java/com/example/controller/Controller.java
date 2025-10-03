@@ -1,6 +1,7 @@
 package com.example.controller;
 
 import java.util.List;
+import java.util.Arrays;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +13,7 @@ import com.example.service.AccountService;
 import com.example.entity.Account;
 import com.example.service.GameService;
 import com.example.entity.Game;
+import com.example.enums.GameState;
 import com.example.service.GamePlayerService;
 import com.example.entity.GamePlayer;
 import com.example.service.FriendService;
@@ -130,5 +132,68 @@ public class Controller{
 		}
 		friendService.removeFriend(currentFriend);
 		return ResponseEntity.status(200).body(null);
+	}
+
+	@PostMapping("/Game/Create")
+	public ResponseEntity<Game> createGame(@RequestBody Game game){
+		game = new Game(game.getHost());
+		game = gameService.createGame(game);
+		gamePlayerService.addGamePlayer(game.getGameId(), game.getHost());
+		return ResponseEntity.status(200).body(game);
+	}
+
+	@PostMapping("/Game/Visibility")
+	public ResponseEntity<Game> setGameVisibility(@RequestBody Game game){
+		Game fullGame = gameService.getGameById(game.getGameId());
+		return ResponseEntity.status(200).body(gameService.setVisibility(fullGame, game.getVisibility()));
+	}
+
+	@PostMapping("/Game/Join")
+	public ResponseEntity<Game> joinGame(@RequestBody List<Integer> ids){
+		Integer gameId = ids.get(0);
+		Integer playerId = ids.get(1);
+		if(gameId == null || playerId == null){
+			return ResponseEntity.status(400).body(null);
+		}
+		Game game = gameService.getGameById(gameId);
+		if(game.getGameState() != GameState.ENDED){
+			if(gamePlayerService.getEntityByGameAndUser(gameId, playerId)==null){
+				GamePlayer player = gamePlayerService.addGamePlayer(gameId, playerId);
+			}
+		}
+		return ResponseEntity.status(200).body(game);
+	}
+
+	@PostMapping("/Game/Leave")
+	public ResponseEntity<Void> leaveGame(@RequestBody GamePlayer gamePlayer){
+		int gameId = gamePlayer.getGameId();
+		GamePlayer toRemove = gamePlayerService.getEntityByGameAndUser(gameId, gamePlayer.getPlayerId());
+		if(toRemove != null){
+			gamePlayerService.removeGamePlayer(toRemove);
+		}
+		List<GamePlayer> players = gamePlayerService.getPlayersByGameId(gameId);
+		if(players.size() == 0){
+			gameService.deleteGame(gameService.getGameById(gameId));
+		}else{
+			Game theGame = gameService.getGameById(gameId);
+			gameService.setHost(theGame, players.get(0).getPlayerId());
+		}
+		return ResponseEntity.status(200).body(null);
+	}
+
+	@PostMapping("/Game/Start")
+	public ResponseEntity<Game> startGame(@RequestBody Integer id){
+		if(id == null){
+			return ResponseEntity.status(400).body(null);
+		}
+		Game game = gameService.getGameById(id);
+		if(game == null){
+			return ResponseEntity.status(400).body(null);
+		}
+		if(game.getGameState() == GameState.CREATING){
+			gameService.setState(game, GameState.PLAYING);
+			return ResponseEntity.status(200).body(gameService.saveGame(game));
+		}
+		return ResponseEntity.status(204).body(null);
 	}
 }

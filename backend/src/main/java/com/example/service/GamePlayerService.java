@@ -18,4 +18,16 @@ public class GamePlayerService{
 	public List<GamePlayer> getPlayersByGameId(int gameId){
 		return gamePlayerRepository.findByGameId(gameId);
 	}
+
+	public GamePlayer addGamePlayer(int gameId, int playerId){
+		return gamePlayerRepository.save(new GamePlayer(gameId, playerId));
+	}
+
+	public GamePlayer getEntityByGameAndUser(int gameId, int playerId){
+		return gamePlayerRepository.findByGameIdAndPlayerId(gameId, playerId);
+	}
+
+	public void removeGamePlayer(GamePlayer gamePlayer){
+		gamePlayerRepository.delete(gamePlayer);
+	}
 }

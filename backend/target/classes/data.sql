@@ -12,7 +12,9 @@ create table account (
 create table game (
 	gameId int primary key auto_increment,
 	host int,
-	visibility varchar(10)
+	currentPlayer int,
+	visibility varchar(10),
+	gameState varchar(10)
 );
 create table gamePlayer (
 	entryId int primary key auto_increment,
@@ -40,10 +42,10 @@ insert into account values(13, 'Eliza', 'password', 3, 2);
 insert into account values(14, 'Terrence', 'password', 4, 1);
 insert into account values(15, 'Ollie', 'password', 0, 1);
 
-insert into game values(11, 11, 'PUBLIC');
-insert into game values(13, 14, 'FRIENDS');
-insert into game values(15, 14, 'INVITE');	-- implement invite system
-insert into game values(12, 15, 'FRIENDS');
+insert into game values(11, 11, 11, 'PUBLIC', 'CREATING');
+insert into game values(13, 14, 14, 'FRIENDS', 'PLAYING');
+insert into game values(15, 14, 14, 'INVITE', 'CREATING');	-- implement invite system
+insert into game values(12, 15, 15, 'FRIENDS', 'PLAYING');
 
 insert into gamePlayer values(11, 11, 11, 6);
 insert into gamePlayer values(12, 11, 12, 6);

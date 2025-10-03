@@ -17,6 +17,11 @@ public class GamePlayer {
 	private Integer diceCount;
 
 	public GamePlayer(){}
+	public GamePlayer(int gameId, int playerId){
+		this.gameId = gameId;
+		this.playerId = playerId;
+		this.diceCount = 6;
+	}
 	public GamePlayer(int entryId, int gameId, int playerId, int diceCount){
 		this.entryId = entryId;
 		this.gameId = gameId;
@@ -24,28 +29,28 @@ public class GamePlayer {
 		this.diceCount = diceCount;
 	}
 
-	public int getEntryId(){
+	public Integer getEntryId(){
 		return entryId;
 	}
 	public void setEntryId(int entryId){
 		this.entryId = entryId;
 	}
 
-	public int getGameId(){
+	public Integer getGameId(){
 		return gameId;
 	}
 	public void setGameId(int gameId){
 		this.gameId = gameId;
 	}
 
-	public int getPlayerId(){
+	public Integer getPlayerId(){
 		return playerId;
 	}
 	public void setPlayerId(int playerId){
 		this.playerId = playerId;
 	}
 
-	public int getDiceCount(){
+	public Integer getDiceCount(){
 		return diceCount;
 	}
 	public void setDiceCount(int diceCount){
