@@ -30,7 +30,6 @@ public class AccountService{
     }
 
     public Account addAccount(Account account){
-        System.out.println(account);
         return accountRepository.save(account);
     }
 

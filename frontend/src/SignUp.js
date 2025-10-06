@@ -33,7 +33,7 @@ function SignUp(){
 				<SignUpForm/>
 			</SignUpErrorProvider>
 			<div className="loginSpacer">
-				<button title="Lead to log in page" onClick={ToLogin}>Log In</button>
+				<button onClick={ToLogin}>Log In</button>
 			</div>
 		</div>
 	)

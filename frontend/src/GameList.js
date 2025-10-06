@@ -23,8 +23,8 @@ function GameList() {
 		<header className="GameTableHeader">
 			<div className="hostNameColumn">Host</div>
 			<div className="playerCountColumn">Players</div>
-			<div className="visibilityColumn" title="This will have functionality to sort by public/friends/in play. Games you are invited to should always be on top">Visibility</div>
-			<div className="joinColumn" title="If invited, text should be 'Accept Invite'. If games are in play, disable">Join</div>
+			<div className="visibilityColumn" title="TODO This will have functionality to sort by public/friends/in play. Games you are invited to should always be on top">Visibility</div>
+			<div className="joinColumn" title="TODO If invited, text should be 'Accept Invite'. If games are in play, disable">Join</div>
 			<div className="spectateColumn">Spectate</div>
 		</header>
 		<div>
@@ -84,7 +84,7 @@ function TableRow(input){
 			<HostName hostId={game.host}/>
 			<PlayerCount gameId={gameId}/>
 			<div className="visibilityColumn">{game.visibility}</div>
-			<JoinButton gameId={gameId} inGame={inGame}/>
+			<JoinButton gameId={gameId} inGame={inGame} gameState={game.gameState}/>
 			<SpectateButton gameId={gameId} inGame={inGame}/>
 		</div>
 	)
@@ -158,7 +158,7 @@ function SpectateButton({gameId, inGame}){
 	)
 }
 
-function JoinButton({gameId, inGame}){
+function JoinButton({gameId, inGame, gameState}){
 	let {loggedInId} = useLoggedInId();
 	const navigate = useNavigate();
 	function JoinGame(){
@@ -181,7 +181,7 @@ function JoinButton({gameId, inGame}){
 	}
 	return(
 		<div className="joinColumn">
-			<button className="joinButton" onClick={JoinGame}>{inGame?"Return":"Join"}</button>
+			<button className="joinButton" onClick={JoinGame} disabled={!inGame && gameState!=="CREATING"}>{inGame?"Return":"Join"}</button>
 		</div>
 	)
 }

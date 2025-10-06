@@ -12,15 +12,31 @@ create table account (
 create table game (
 	gameId int primary key auto_increment,
 	host int,
-	currentPlayer int,
 	visibility varchar(10),
-	gameState varchar(10)
+	gameState varchar(10),
+	maxDice int default 6,
+	currentPlayer int default -1,
+	previousPlayer int default -1,
+	betCount int default 0,
+	betDie int default 0,
+	count1s int default 0,
+	count2s int default 0,
+	count3s int default 0,
+	count4s int default 0,
+	count5s int default 0,
+	count6s int default 0
 );
 create table gamePlayer (
 	entryId int primary key auto_increment,
 	gameId int,
 	playerId int,
-	diceCount int,
+	diceCount int default 0,
+	die1 int default 0,
+	die2 int default 0,
+	die3 int default 0,
+	die4 int default 0,
+	die5 int default 0,
+	die6 int default 0,
 
 	foreign key (gameId) references game(gameId),
 	foreign key (playerId) references account(accountId)
@@ -36,25 +52,24 @@ create table friend(
 );
 
 
-insert into account values(11, 'Jimmy', 'password', 1, 4);
-insert into account values(12, 'Frank', 'password', 2, 3);
-insert into account values(13, 'Eliza', 'password', 3, 2);
-insert into account values(14, 'Terrence', 'password', 4, 1);
-insert into account values(15, 'Ollie', 'password', 0, 1);
+insert into account (username, password, wins, losses) values('Jimmy', 'password', 1, 4);
+insert into account (username, password, wins, losses) values('Frank', 'password', 2, 3);
+insert into account (username, password, wins, losses) values('Eliza', 'password', 3, 2);
+insert into account (username, password, wins, losses) values('Terrence', 'password', 4, 1);
+insert into account (username, password, wins, losses) values('Ollie', 'password', 0, 1);
 
-insert into game values(11, 11, 11, 'PUBLIC', 'CREATING');
-insert into game values(13, 14, 14, 'FRIENDS', 'PLAYING');
-insert into game values(15, 14, 14, 'INVITE', 'CREATING');	-- implement invite system
-insert into game values(12, 15, 15, 'FRIENDS', 'PLAYING');
+insert into game (host, visibility, gameState) values(1, 'PUBLIC', 'CREATING');
+insert into game (host, visibility, gameState) values(4, 'FRIENDS', 'PLAYING');
+insert into game (host, visibility, gameState) values(4, 'INVITE', 'CREATING');	-- implement invite system
 
-insert into gamePlayer values(11, 11, 11, 6);
-insert into gamePlayer values(12, 11, 12, 6);
-insert into gamePlayer values(13, 11, 13, 6);
-insert into gamePlayer values(14, 11, 14, 6);
-insert into gamePlayer values(15, 12, 15, 6);
-insert into gamePlayer values(16, 12, 11, 6);
+insert into gamePlayer (gameId, playerId) values(1, 1);
+insert into gamePlayer (gameId, playerId) values(1, 2);
+insert into gamePlayer (gameId, playerId) values(1, 3);
+insert into gamePlayer (gameId, playerId) values(1, 4);
+insert into gamePlayer (gameId, playerId) values(2, 5);
+insert into gamePlayer (gameId, playerId) values(2, 1);
 
-insert into friend values(11, 11, 12, 'CONFIRMED');
-insert into friend values(12, 13, 11, 'PENDING');
-insert into friend values(13, 11, 14, 'PENDING');
-insert into friend values(14, 15, 11, 'CONFIRMED');
+insert into friend (userId1, userId2, status) values(1, 2, 'CONFIRMED');
+insert into friend (userId1, userId2, status) values(3, 1, 'PENDING');
+insert into friend (userId1, userId2, status) values(1, 4, 'PENDING');
+insert into friend (userId1, userId2, status) values(5, 1, 'CONFIRMED');

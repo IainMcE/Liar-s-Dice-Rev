@@ -9,12 +9,15 @@ public class GamePlayer {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer entryId;
-	@Column(name="gameId")
 	private Integer gameId;
-	@Column(name="playerId")
 	private Integer playerId;
-	@Column(name="diceCount")
 	private Integer diceCount;
+	private Integer die1;
+	private Integer die2;
+	private Integer die3;
+	private Integer die4;
+	private Integer die5;
+	private Integer die6;
 
 	public GamePlayer(){}
 	public GamePlayer(int gameId, int playerId){
@@ -60,6 +63,48 @@ public class GamePlayer {
 		this.diceCount--;
 	}
 
+	public Integer getDie1(){
+		return die1;
+	}
+	public void setDie1(int die1){
+		this.die1 = die1;
+	}
+
+	public Integer getDie2(){
+		return die2;
+	}
+	public void setDie2(int die2){
+		this.die2 = die2;
+	}
+
+	public Integer getDie3(){
+		return die3;
+	}
+	public void setDie3(int die3){
+		this.die3 = die3;
+	}
+
+	public Integer getDie4(){
+		return die4;
+	}
+	public void setDie4(int die4){
+		this.die4 = die4;
+	}
+
+	public Integer getDie5(){
+		return die5;
+	}
+	public void setDie5(int die5){
+		this.die5 = die5;
+	}
+
+	public Integer getDie6(){
+		return die6;
+	}
+	public void setDie6(int die6){
+		this.die6 = die6;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -93,6 +138,7 @@ public class GamePlayer {
 				"gameId=" + gameId +
 				", playerId='" + playerId + '\'' +
 				", diceCount='" + diceCount + '\'' +
+				", dice rolls: [" + die1+","+ die2+","+ die3+","+ die4+","+ die5+","+ die6+","+ ']' +
 				'}';
 	}
 }

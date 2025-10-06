@@ -74,7 +74,7 @@ function GameLobby(){
 				{players.map((player)=>{
 					return(<PlayerView key={player.playerId} playerId={player.playerId} hostId={game.host}/>)
 				})}
-				<button className="LeaveGame" onClick={leaveGame} title="TODO if a player: remove from game, nav to gamelist">Leave</button>
+				<button className="LeaveGame" onClick={leaveGame}>Leave</button>
 			</div>
 			<div className="RightSide">
 				<div className="Settings">

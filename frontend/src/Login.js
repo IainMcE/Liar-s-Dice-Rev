@@ -128,7 +128,7 @@ function ToSignUpButton(){
 	}
 	return(
 		<div className="signUpSpacer">
-			<button title="Lead to sign in page" onClick={ToSignUp}>Sign Up</button>
+			<button onClick={ToSignUp}>Sign Up</button>
 		</div>
 	)
 }

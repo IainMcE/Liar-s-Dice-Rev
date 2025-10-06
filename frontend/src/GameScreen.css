@@ -21,7 +21,7 @@
 	font-size: 2vh;
 }
 
-.Call{
+.Bet{
 	padding:4vh;
 }
 
@@ -29,12 +29,12 @@
 	height:7.5vh;
 }
 
-.prevCall{
+.prevBet{
 	font-size: 4vh;
 	font-weight: bold;
 }
 
-.callButtonWidth{
+.betButtonWidth{
 	width:100px;
 	box-sizing: border-box;
 	text-align: center;
@@ -42,9 +42,27 @@
 	font-weight: inherit;
 }
 
-.CallChangeButtons{
+.BetChangeButtons{
 	font-size:2vh;
 	font-weight:bold;
+}
+
+.betContainer{
+	display: flex;
+    justify-content: center;
+}
+
+.betSpacer{
+	width:67px;
+	font-size: 67px;
+	display: inline-flex;
+	flex-direction: column;
+}
+
+.betCount{
+	display: inline-block;
+	margin:0;
+	font-size:75px;
 }
 
 .RoundEndButtonHolder{
@@ -70,4 +88,8 @@
 	bottom:0;
 	width:100vw;
 	padding:2vh 0;
+}
+
+.CurrentPlayer{
+	background-image: linear-gradient(to bottom, lightgreen, transparent 50%);
 }

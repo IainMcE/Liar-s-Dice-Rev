@@ -2,6 +2,7 @@ package com.example.controller;
 
 import java.util.List;
 import java.util.Arrays;
+import java.util.Random;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -23,6 +24,7 @@ import com.example.enums.FriendStatus;
 
 @RestController
 public class Controller{
+	private Random random;
 	@Autowired
 	AccountService accountService;
 	@Autowired
@@ -31,6 +33,15 @@ public class Controller{
 	GamePlayerService gamePlayerService;
 	@Autowired
 	FriendService friendService;
+
+	@Autowired
+	public Controller(){
+		this.random = new Random();
+	}
+
+	public void setRandom(Random random){
+		this.random = random;
+	}
 
 	@PostMapping("/SignUp")
 	public ResponseEntity<Account> createAccount(@RequestBody Account newAcc){
@@ -42,14 +53,14 @@ public class Controller{
 			return ResponseEntity.status(401).body(null);
 		}
 		
-		return ResponseEntity.status(200).body(accountService.addAccount(newAcc));
+		return ResponseEntity.status(200).body(accountService.addAccount(newAcc).displayInformation());
 	}
 
 	@PostMapping("/Login")
     public ResponseEntity<Account> verifyLogin(@RequestBody Account loggingIn){
         Account result = accountService.validateAccountPassword(loggingIn);
         if(result != null){
-            return ResponseEntity.status(200).body(result);
+            return ResponseEntity.status(200).body(result.displayInformation());
         }else{
             return ResponseEntity.status(401).body(null);
         }
@@ -62,9 +73,6 @@ public class Controller{
         }
         return ResponseEntity.status(204).body(null);
     }
-
-
-	//get mapping /users/accountId/gameHistory | history
 
 	@GetMapping("/GameList")
 	public ResponseEntity<List<Integer>> getGameIds(){
@@ -161,22 +169,27 @@ public class Controller{
 				GamePlayer player = gamePlayerService.addGamePlayer(gameId, playerId);
 			}
 		}
-		return ResponseEntity.status(200).body(game);
+		return ResponseEntity.status(200).body(game.displayInformation());
 	}
 
 	@PostMapping("/Game/Leave")
 	public ResponseEntity<Void> leaveGame(@RequestBody GamePlayer gamePlayer){
 		int gameId = gamePlayer.getGameId();
+		Game game = gameService.getGameById(gameId);
 		GamePlayer toRemove = gamePlayerService.getEntityByGameAndUser(gameId, gamePlayer.getPlayerId());
-		if(toRemove != null){
-			gamePlayerService.removeGamePlayer(toRemove);
-		}
 		List<GamePlayer> players = gamePlayerService.getPlayersByGameId(gameId);
+		if(toRemove != null){
+			if(game.getCurrentPlayer() == toRemove.getPlayerId()){
+				game = gameService.nextPlayer(game, players);
+			}
+			gamePlayerService.removeGamePlayer(toRemove);
+			players.remove(players.indexOf(toRemove));
+		}
 		if(players.size() == 0){
-			gameService.deleteGame(gameService.getGameById(gameId));
+			gameService.deleteGame(game);
 		}else{
-			Game theGame = gameService.getGameById(gameId);
-			gameService.setHost(theGame, players.get(0).getPlayerId());
+			game = gameService.setHost(game, players.get(0).getPlayerId());
+			gameService.saveGame(game);
 		}
 		return ResponseEntity.status(200).body(null);
 	}
@@ -184,14 +197,34 @@ public class Controller{
 	@PostMapping("/Game/Start")
 	public ResponseEntity<Game> startGame(@RequestBody Game game){
 		game = gameService.getGameById(game.getGameId());
-		System.out.println(game);
 		if(game == null){
 			return ResponseEntity.status(400).body(null);
 		}
 		if(game.getGameState() == GameState.CREATING){
-			gameService.setState(game, GameState.PLAYING);
-			return ResponseEntity.status(200).body(gameService.saveGame(game));
+			game = gameService.setState(game, GameState.PLAYING);
+			List<GamePlayer> players = gamePlayerService.setDiceCounts(game);
+			game = gameService.nextPlayer(game, players);
+			return ResponseEntity.status(200).body(newRound(game).displayInformation());
 		}
 		return ResponseEntity.status(204).body(null);
+	}
+
+	public Game newRound(Game game){
+		List<GamePlayer> players = gamePlayerService.getPlayersByGameId(game.getGameId());
+		game = gameService.resetDice(game);
+		for(GamePlayer player : players){
+			game = playerRollDice(game, player);
+		}
+		return gameService.saveGame(game);
+	}
+
+	public Game playerRollDice(Game game, GamePlayer gamePlayer){
+		for(int i = 0; i<gamePlayer.getDiceCount(); i++){
+			int roll = random.nextInt(1, 7);
+			gamePlayer = gamePlayerService.setPlayerRoll(gamePlayer, i, roll);
+			game = gameService.countRoll(game, roll);
+		}
+		gamePlayerService.saveGamePlayer(gamePlayer);
+		return game;
 	}
 }
