@@ -11,6 +11,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.messaging.handler.annotation.SendTo;
+import org.springframework.messaging.handler.annotation.MessageMapping;
 
 import com.example.service.AccountService;
 import com.example.entity.Account;
@@ -84,6 +86,12 @@ public class Controller{
 		return ResponseEntity.status(200).body(gameService.getGameIds());
 	}
 
+	@MessageMapping
+	@SendTo("/topic/GameList")
+	public List<Integer> sendGameIds(){
+		return gameService.getGameIds();
+	}
+
 	@GetMapping("/Game/{gameId}")
 	public ResponseEntity<Game> getGame(@PathVariable("gameId") int gameId){
 		if(gameService.hasGameWithId(gameId)){
@@ -153,7 +161,6 @@ public class Controller{
 		game = new Game(game.getHost());
 		game = gameService.createGame(game);
 		gamePlayerService.addGamePlayer(game.getGameId(), game.getHost());
-		messaging.convertAndSend("/topic/GameList", gameService.getGameIds());
 		return ResponseEntity.status(200).body(game);
 	}
 

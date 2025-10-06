@@ -12,15 +12,10 @@ import useStompClient from './useStompClient.js';
 function GameList() {
 	//GameList
 	const [activeGames, setActiveGames] = useState([]);
-	useEffect(()=>{
-		const socket = new WebSocket("ws://localhost:8080/GameList")
-		socket.addEventListener("message", event=>{
-			console.log(event.data);
-		})
-		socket.addEventListener("error", error=>{
-			console.error(error.data);
-		})
-	})
+	const onReception=(event)=>{
+		console.log(event.data);
+	}
+	useStompClient("http://localhost:8080/Liars-Dice", ["/topic/GameList"], onReception)
 	return (
 	<div className="ViewGames" onClick={hideMiniUser}>
 		<MiniUser/>
