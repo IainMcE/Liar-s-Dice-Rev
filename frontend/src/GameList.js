@@ -4,6 +4,7 @@ import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import { useLoggedInId } from './App.js';
 import axios from 'axios';
+import useStompClient from './useStompClient.js';
 
 //requires integration with backend for info on games in set up (host username, number players, visibility)
 //		or list game ids then query for their info?
@@ -12,11 +13,14 @@ function GameList() {
 	//GameList
 	const [activeGames, setActiveGames] = useState([]);
 	useEffect(()=>{
-		fetch('http://localhost:8080/GameList')
-			.then(response=>response.json())
-			.then(data => setActiveGames(data))
-			.catch(error => console.error('Error fetching data: ', error))
-	}, []);
+		const socket = new WebSocket("ws://localhost:8080/GameList")
+		socket.addEventListener("message", event=>{
+			console.log(event.data);
+		})
+		socket.addEventListener("error", error=>{
+			console.error(error.data);
+		})
+	})
 	return (
 	<div className="ViewGames" onClick={hideMiniUser}>
 		<MiniUser/>

@@ -7,6 +7,11 @@ import java.util.ArrayList;
 import com.example.enums.Visibility;
 import com.example.enums.GameState;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 @Table(name="game")
 public class Game {
@@ -30,6 +35,8 @@ public class Game {
 	private Integer count4s;
 	private Integer count5s;
 	private Integer count6s;
+	private Integer actualCount;
+	private Integer loserId;
 
 	public Game(){
 		
@@ -49,8 +56,10 @@ public class Game {
 		count4s = 0;
 		count5s = 0;
 		count6s = 0;
+		loserId = -1;
+		actualCount = -1;
 	}
-	public Game(int host, Visibility visibility, GameState gameState, int currentPlayer, int previousPlayer, int maxDice, int betCount, int betDie){
+	public Game(int host, Visibility visibility, GameState gameState, int currentPlayer, int previousPlayer, int maxDice, int betCount, int betDie, int actualCount, int loserId){
 		this.host = host;
 		this.visibility = visibility;
 		this.gameState = gameState;
@@ -59,6 +68,8 @@ public class Game {
 		this.maxDice = maxDice;
 		this.betCount = betCount;
 		this.betDie = betDie;
+		this.actualCount = actualCount;
+		this.loserId = loserId;
 		count1s = 0;
 		count2s = 0;
 		count3s = 0;
@@ -67,109 +78,86 @@ public class Game {
 		count6s = 0;
 	}
 
-	public Integer getGameId() {
-		return gameId;
-	}
-	public void setGameId(Integer gameId) {
-		this.gameId = gameId;
-	}
-
-	public Integer getHost() {
-		return host;
-	}
-	public void setHost(Integer host) {
-		this.host = host;
-	}
-
-	public Visibility getVisibility() {
-		return visibility;
-	}
-	public void setVisibility(Visibility visibility) {
-		this.visibility = visibility;
+	public boolean validBet(int newCount, int newDie){
+		if(newCount < 1 || newDie < 1){
+			return false;
+		}
+		if(newDie < betDie){
+			return false;
+		}
+		if(newCount <= betCount){
+			return newDie > betDie;
+		}
+		return true;
 	}
 
-	public GameState getGameState(){
-		return gameState;
-	}
-	public void setGameState(GameState gameState){
-		this.gameState = gameState;
-	}
-
-	public Integer getMaxDice() {
-		return maxDice;
-	}
-	public void setMaxDice(Integer maxDice) {
-		this.maxDice = maxDice;
-	}
-
-	public Integer getCurrentPlayer() {
-		return currentPlayer;
-	}
-	public void setCurrentPlayer(Integer currentPlayer) {
-		this.currentPlayer = currentPlayer;
+	public Integer getCountByDie(int die){
+		switch(die){
+			case 1:
+				return count1s;
+			case 2:
+				return count2s;
+			case 3:
+				return count3s;
+			case 4:
+				return count4s;
+			case 5:
+				return count5s;
+			case 6:
+				return count6s;
+			default:
+				return -1;
+		}
 	}
 
-	public Integer getPreviousPlayer() {
-		return previousPlayer;
-	}
-	public void setPreviousPlayer(Integer previousPlayer) {
-		this.previousPlayer = previousPlayer;
-	}
-
-	public Integer getBetCount() {
-		return betCount;
-	}
-	public void setBetCount(Integer betCount) {
-		this.betCount = betCount;
-	}
-
-	public Integer getBetDie() {
-		return betDie;
-	}
-	public void setBetDie(Integer betDie) {
-		this.betDie = betDie;
-	}
-
-	public Integer getCount1s() {
-		return count1s;
-	}
-	public void setCount1s(Integer count1s) {
-		this.count1s = count1s;
+	public void setCountByDie(Integer die, Integer count){
+		switch(die){
+			case 1:
+				count1s = count;
+				break;
+			case 2:
+				count2s = count;
+				break;
+			case 3:
+				count3s = count;
+				break;
+			case 4:
+				count4s = count;
+				break;
+			case 5:
+				count5s = count;
+				break;
+			case 6:
+				count6s = count;
+				break;
+			default:
+				return;
+		}
 	}
 
-	public Integer getCount2s() {
-		return count2s;
-	}
-	public void setCount2s(Integer count2s) {
-		this.count2s = count2s;
-	}
-
-	public Integer getCount3s() {
-		return count3s;
-	}
-	public void setCount3s(Integer count3s) {
-		this.count3s = count3s;
-	}
-
-	public Integer getCount4s() {
-		return count4s;
-	}
-	public void setCount4s(Integer count4s) {
-		this.count4s = count4s;
-	}
-
-	public Integer getCount5s() {
-		return count5s;
-	}
-	public void setCount5s(Integer count5s) {
-		this.count5s = count5s;
-	}
-
-	public Integer getCount6s() {
-		return count6s;
-	}
-	public void setCount6s(Integer count6s) {
-		this.count6s = count6s;
+	public void incrementCountByDie(Integer die){
+		switch(die){
+			case 1:
+				count1s++;
+				break;
+			case 2:
+				count2s++;
+				break;
+			case 3:
+				count3s++;
+				break;
+			case 4:
+				count4s++;
+				break;
+			case 5:
+				count5s++;
+				break;
+			case 6:
+				count6s++;
+				break;
+			default:
+				return;
+		}
 	}
 
 	@Override
@@ -206,6 +194,6 @@ public class Game {
 	}
 
 	public Game displayInformation(){
-		return new Game(host, visibility, gameState, currentPlayer, previousPlayer, maxDice, betCount, betDie);
+		return new Game(host, visibility, gameState, currentPlayer, previousPlayer, maxDice, betCount, betDie, actualCount, loserId);
 	}
 }

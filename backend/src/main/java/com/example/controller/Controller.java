@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
+import org.springframework.messaging.simp.SimpMessagingTemplate;
+import org.springframework.context.annotation.Lazy;
 
 import com.example.service.AccountService;
 import com.example.entity.Account;
@@ -33,14 +35,17 @@ public class Controller{
 	GamePlayerService gamePlayerService;
 	@Autowired
 	FriendService friendService;
+	SimpMessagingTemplate messaging;
 
 	@Autowired
-	public Controller(){
+	public Controller(@Lazy SimpMessagingTemplate messaging){
 		this.random = new Random();
+		this.messaging = messaging;
 	}
 
 	public void setRandom(Random random){
 		this.random = random;
+		gameService.setRandom(this.random);
 	}
 
 	@PostMapping("/SignUp")
@@ -120,7 +125,8 @@ public class Controller{
 		if(friendService.friendStatus(friend.getUserId1(), friend.getUserId2()) != null){
 			return ResponseEntity.status(204).body(null);
 		}
-		return ResponseEntity.status(200).body(friendService.addFriend(friend));
+		Friend newFriend = friendService.addFriend(friend);
+		return ResponseEntity.status(200).body(newFriend);
 	}
 
 	@PostMapping("/Friends/Accept")
@@ -147,6 +153,7 @@ public class Controller{
 		game = new Game(game.getHost());
 		game = gameService.createGame(game);
 		gamePlayerService.addGamePlayer(game.getGameId(), game.getHost());
+		messaging.convertAndSend("/topic/GameList", gameService.getGameIds());
 		return ResponseEntity.status(200).body(game);
 	}
 
@@ -203,28 +210,28 @@ public class Controller{
 		if(game.getGameState() == GameState.CREATING){
 			game = gameService.setState(game, GameState.PLAYING);
 			List<GamePlayer> players = gamePlayerService.setDiceCounts(game);
-			game = gameService.nextPlayer(game, players);
-			return ResponseEntity.status(200).body(newRound(game).displayInformation());
+			return ResponseEntity.status(200).body(gameService.newRound(game).displayInformation());
 		}
 		return ResponseEntity.status(204).body(null);
 	}
 
-	public Game newRound(Game game){
-		List<GamePlayer> players = gamePlayerService.getPlayersByGameId(game.getGameId());
-		game = gameService.resetDice(game);
-		for(GamePlayer player : players){
-			game = playerRollDice(game, player);
+	@PostMapping("/Game/Bet")
+	public ResponseEntity<Game> placeBet(@RequestBody Game bet){
+		Game previous = gameService.getGameById(bet.getGameId());
+		int count = bet.getBetCount();
+		int die = bet.getBetDie();
+		if(!gameService.validBet(previous, count, die)){
+			return ResponseEntity.status(400).body(null);
+		}else{
+			bet = gameService.placeBet(previous, count, die);
+			return ResponseEntity.status(200).body(bet.displayInformation());
 		}
-		return gameService.saveGame(game);
 	}
 
-	public Game playerRollDice(Game game, GamePlayer gamePlayer){
-		for(int i = 0; i<gamePlayer.getDiceCount(); i++){
-			int roll = random.nextInt(1, 7);
-			gamePlayer = gamePlayerService.setPlayerRoll(gamePlayer, i, roll);
-			game = gameService.countRoll(game, roll);
-		}
-		gamePlayerService.saveGamePlayer(gamePlayer);
-		return game;
+	@PostMapping("/Game/Challenge")
+	public ResponseEntity<Game> challengeBet(@RequestBody int gameId){
+		Game game = gameService.getGameById(gameId);
+		gameService.challengeBet(game);
+		return ResponseEntity.status(200).body(gameService.getGameById(gameId).displayInformation());
 	}
 }

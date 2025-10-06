@@ -37,6 +37,8 @@ create table gamePlayer (
 	die4 int default 0,
 	die5 int default 0,
 	die6 int default 0,
+	loserId int default -1,
+	actualCount int default -1,
 
 	foreign key (gameId) references game(gameId),
 	foreign key (playerId) references account(accountId)

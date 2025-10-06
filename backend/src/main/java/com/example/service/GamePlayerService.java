@@ -46,26 +46,12 @@ public class GamePlayerService{
 	}
 
 	public GamePlayer setPlayerRoll(GamePlayer gamePlayer, int index, int roll){
-		switch(index){
-			case 0:
-				gamePlayer.setDie1(roll);
-				break;
-			case 1:
-				gamePlayer.setDie2(roll);
-				break;
-			case 2:
-				gamePlayer.setDie3(roll);
-				break;
-			case 3:
-				gamePlayer.setDie4(roll);
-				break;
-			case 4:
-				gamePlayer.setDie5(roll);
-				break;
-			case 5:
-				gamePlayer.setDie6(roll);
-				break;
-		}
+		gamePlayer.setRollByDie(index, roll);
 		return gamePlayer;
+	}
+
+	public GamePlayer loseDie(GamePlayer gamePlayer){
+		gamePlayer.loseDie();
+		return saveGamePlayer(gamePlayer);
 	}
 }

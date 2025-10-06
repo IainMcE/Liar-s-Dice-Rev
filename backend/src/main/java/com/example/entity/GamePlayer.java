@@ -2,6 +2,11 @@ package com.example.entity;
 
 import javax.persistence.*;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Entity
 @Table(name="gamePlayer")
 public class GamePlayer {
@@ -32,77 +37,52 @@ public class GamePlayer {
 		this.diceCount = diceCount;
 	}
 
-	public Integer getEntryId(){
-		return entryId;
-	}
-	public void setEntryId(int entryId){
-		this.entryId = entryId;
+	public void setRollByDie(int index, int roll){
+		switch(index){
+			case 0:
+				die1 = roll;
+				break;
+			case 1:
+				die2 = roll;
+				break;
+			case 2:
+				die3 = roll;
+				break;
+			case 3:
+				die4 = roll;
+				break;
+			case 4:
+				die5 = roll;
+				break;
+			case 5:
+				die6 = roll;
+				break;
+			default:
+				return;
+		}
 	}
 
-	public Integer getGameId(){
-		return gameId;
-	}
-	public void setGameId(int gameId){
-		this.gameId = gameId;
+	public Integer getRollByDie(int index){
+		switch(index){
+			case 0:
+				return die1;
+			case 1:
+				return die2;
+			case 2:
+				return die3;
+			case 3:
+				return die4;
+			case 4:
+				return die5;
+			case 5:
+				return die6;
+			default:
+				return -1;
+		}
 	}
 
-	public Integer getPlayerId(){
-		return playerId;
-	}
-	public void setPlayerId(int playerId){
-		this.playerId = playerId;
-	}
-
-	public Integer getDiceCount(){
-		return diceCount;
-	}
-	public void setDiceCount(int diceCount){
-		this.diceCount = diceCount;
-	}
 	public void loseDie(){
 		this.diceCount--;
-	}
-
-	public Integer getDie1(){
-		return die1;
-	}
-	public void setDie1(int die1){
-		this.die1 = die1;
-	}
-
-	public Integer getDie2(){
-		return die2;
-	}
-	public void setDie2(int die2){
-		this.die2 = die2;
-	}
-
-	public Integer getDie3(){
-		return die3;
-	}
-	public void setDie3(int die3){
-		this.die3 = die3;
-	}
-
-	public Integer getDie4(){
-		return die4;
-	}
-	public void setDie4(int die4){
-		this.die4 = die4;
-	}
-
-	public Integer getDie5(){
-		return die5;
-	}
-	public void setDie5(int die5){
-		this.die5 = die5;
-	}
-
-	public Integer getDie6(){
-		return die6;
-	}
-	public void setDie6(int die6){
-		this.die6 = die6;
 	}
 
 	@Override
