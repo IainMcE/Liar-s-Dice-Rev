@@ -4,7 +4,6 @@ import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
 import { useLoggedInId } from './App.js';
 import axios from 'axios';
-import useStompClient from './useStompClient.js';
 
 //requires integration with backend for info on games in set up (host username, number players, visibility)
 //		or list game ids then query for their info?
@@ -12,10 +11,26 @@ import useStompClient from './useStompClient.js';
 function GameList() {
 	//GameList
 	const [activeGames, setActiveGames] = useState([]);
-	const onReception=(event)=>{
-		console.log(event.data);
-	}
-	useStompClient("http://localhost:8080/Liars-Dice", ["/topic/GameList"], onReception)
+	useEffect(()=>{
+		const eventSource = new EventSource("http://localhost:8080/SubGameList");
+
+		eventSource.onopen=()=>{
+			console.log("open")
+		}
+
+		eventSource.addEventListener("GAMELIST", (event)=>{
+			let json = JSON.parse(event.data);
+			setActiveGames(json);
+		});
+
+		eventSource.onerror=(error)=>{
+			console.error("event source error", error)
+		}
+
+		if(eventSource != null){
+			return () => eventSource.close();
+		}
+	}, [])
 	return (
 	<div className="ViewGames" onClick={hideMiniUser}>
 		<MiniUser/>

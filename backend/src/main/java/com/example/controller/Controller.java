@@ -2,17 +2,17 @@ package com.example.controller;
 
 import java.util.List;
 import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.MediaType;
-import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.context.annotation.Lazy;
-import org.springframework.messaging.handler.annotation.SendTo;
-import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import org.springframework.context.event.EventListener;
 
 import com.example.service.AccountService;
 import com.example.entity.Account;
@@ -24,6 +24,7 @@ import com.example.entity.GamePlayer;
 import com.example.service.FriendService;
 import com.example.entity.Friend;
 import com.example.enums.FriendStatus;
+import com.example.controller.ControllerEvent;
 
 
 @RestController
@@ -37,17 +38,28 @@ public class Controller{
 	GamePlayerService gamePlayerService;
 	@Autowired
 	FriendService friendService;
-	SimpMessagingTemplate messaging;
+	private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
 
 	@Autowired
-	public Controller(@Lazy SimpMessagingTemplate messaging){
+	public Controller(){
 		this.random = new Random();
-		this.messaging = messaging;
 	}
 
 	public void setRandom(Random random){
 		this.random = random;
 		gameService.setRandom(this.random);
+	}
+
+	@EventListener
+	public void hanndleControllerEvent(ControllerEvent event){
+		switch(event.getDestination()){
+			case "GameList":
+				dispatchGameList();
+				break;
+			default:
+				System.out.println("Unknown destination: "+event.getDestination());
+				break;
+		}
 	}
 
 	@PostMapping("/SignUp")
@@ -86,11 +98,40 @@ public class Controller{
 		return ResponseEntity.status(200).body(gameService.getGameIds());
 	}
 
-	@MessageMapping
-	@SendTo("/topic/GameList")
-	public List<Integer> sendGameIds(){
-		return gameService.getGameIds();
+	@GetMapping("/SubGameList")
+	public SseEmitter subscribeToGameList(){
+		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+		emitters.add(emitter);
+
+		emitter.onCompletion(() -> emitters.remove(emitter));
+		emitter.onTimeout(() -> emitters.remove(emitter));
+		emitter.onError((e) -> emitters.remove(emitter));
+
+		// Send existing gamelist on subscription
+		try {
+			List<Integer> currentGames = gameService.getGameIds();
+			System.out.println(currentGames);
+			emitter.send(SseEmitter.event().name("GAMELIST").data(currentGames));
+		} catch (Exception e) {
+			emitter.completeWithError(e);
+		}
+
+		return emitter;
 	}
+
+	public void dispatchGameList(){
+		List<SseEmitter> deadEmitters = new ArrayList<>();
+		List<Integer> gameList = gameService.getGameIds();
+		emitters.forEach(emitter->{
+			try{
+				emitter.send(SseEmitter.event().name("GAMELIST").data(gameList));
+			}catch(Exception e){
+				deadEmitters.add(emitter);
+			}
+		});
+		emitters.removeAll(deadEmitters);
+	}
+	
 
 	@GetMapping("/Game/{gameId}")
 	public ResponseEntity<Game> getGame(@PathVariable("gameId") int gameId){

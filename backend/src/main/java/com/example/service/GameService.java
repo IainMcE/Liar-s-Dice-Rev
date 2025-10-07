@@ -2,6 +2,8 @@ package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
+
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -18,6 +20,7 @@ import com.example.repository.GameRepository;
 import com.example.service.GamePlayerService;
 import com.example.enums.GameState;
 import com.example.enums.Visibility;
+import com.example.controller.ControllerEvent;
 
 @Service
 public class GameService{
@@ -25,6 +28,8 @@ public class GameService{
     GameRepository gameRepository;
 	@Autowired
 	GamePlayerService gamePlayerService;
+	@Autowired
+	ApplicationEventPublisher eventPublisher;
 	private final ScheduledExecutorService scheduledExecutorService;
 	private Random random;
 
@@ -59,11 +64,13 @@ public class GameService{
 	}
 
 	public Game createGame(Game game){
-		return gameRepository.save(game);
+		return saveGame(game);
 	}
 
 	public Game saveGame(Game game){
-		return gameRepository.save(game);
+		game = gameRepository.save(game);
+		eventPublisher.publishEvent(new ControllerEvent(this, "GameList", null));
+		return game;
 	}
 
 	public void deleteGame(Game game){

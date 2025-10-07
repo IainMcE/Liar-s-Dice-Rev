@@ -24,7 +24,9 @@ create table game (
 	count3s int default 0,
 	count4s int default 0,
 	count5s int default 0,
-	count6s int default 0
+	count6s int default 0,
+	loserId int default -1,
+	actualCount int default -1
 );
 create table gamePlayer (
 	entryId int primary key auto_increment,
@@ -37,8 +39,6 @@ create table gamePlayer (
 	die4 int default 0,
 	die5 int default 0,
 	die6 int default 0,
-	loserId int default -1,
-	actualCount int default -1,
 
 	foreign key (gameId) references game(gameId),
 	foreign key (playerId) references account(accountId)
@@ -60,16 +60,16 @@ insert into account (username, password, wins, losses) values('Eliza', 'password
 insert into account (username, password, wins, losses) values('Terrence', 'password', 4, 1);
 insert into account (username, password, wins, losses) values('Ollie', 'password', 0, 1);
 
-insert into game (host, visibility, gameState) values(1, 'PUBLIC', 'CREATING');
-insert into game (host, visibility, gameState) values(4, 'FRIENDS', 'PLAYING');
-insert into game (host, visibility, gameState) values(4, 'INVITE', 'CREATING');	-- implement invite system
+insert into game (gameId, host, visibility, gameState) values(11, 1, 'PUBLIC', 'CREATING');
+insert into game (gameId, host, visibility, gameState) values(12, 4, 'FRIENDS', 'PLAYING');
+insert into game (gameId, host, visibility, gameState) values(13, 4, 'INVITE', 'CREATING');	-- implement invite system
 
-insert into gamePlayer (gameId, playerId) values(1, 1);
-insert into gamePlayer (gameId, playerId) values(1, 2);
-insert into gamePlayer (gameId, playerId) values(1, 3);
-insert into gamePlayer (gameId, playerId) values(1, 4);
-insert into gamePlayer (gameId, playerId) values(2, 5);
-insert into gamePlayer (gameId, playerId) values(2, 1);
+insert into gamePlayer (entryId, gameId, playerId) values(11, 11, 1);
+insert into gamePlayer (entryId, gameId, playerId) values(12, 11, 2);
+insert into gamePlayer (entryId, gameId, playerId) values(13, 11, 3);
+insert into gamePlayer (entryId, gameId, playerId) values(14, 11, 4);
+insert into gamePlayer (entryId, gameId, playerId) values(15, 12, 5);
+insert into gamePlayer (entryId, gameId, playerId) values(16, 12, 1);
 
 insert into friend (userId1, userId2, status) values(1, 2, 'CONFIRMED');
 insert into friend (userId1, userId2, status) values(3, 1, 'PENDING');
