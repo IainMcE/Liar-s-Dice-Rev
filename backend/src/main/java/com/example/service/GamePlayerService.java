@@ -2,6 +2,7 @@ package com.example.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.context.ApplicationEventPublisher;
 import java.util.List;
 import java.util.Arrays;
 import java.util.ArrayList;
@@ -10,12 +11,15 @@ import java.util.Optional;
 import com.example.entity.GamePlayer;
 import com.example.repository.GamePlayerRepository;
 import com.example.entity.Game;
+import com.example.controller.ControllerEvent;
 
 @Service
 public class GamePlayerService{
 	@Autowired
 	GamePlayerRepository gamePlayerRepository;
-
+	@Autowired
+	ApplicationEventPublisher eventPublisher;
+	
 	public List<GamePlayer> getPlayersByGameId(int gameId){
 		return gamePlayerRepository.findByGameId(gameId);
 	}
@@ -25,7 +29,9 @@ public class GamePlayerService{
 	}
 
 	public GamePlayer saveGamePlayer(GamePlayer gamePlayer){
-		return gamePlayerRepository.save(gamePlayer);
+		gamePlayer = gamePlayerRepository.save(gamePlayer);
+		eventPublisher.publishEvent(new ControllerEvent(this, "Player", gamePlayer.getGameId()));
+		return gamePlayer;
 	}
 
 	public GamePlayer getEntityByGameAndUser(int gameId, int playerId){

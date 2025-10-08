@@ -39,31 +39,45 @@ function GameLobby(){
 		axios.post('http://localhost:8080/Game/Leave', {
 			gameId:gameId,
 			playerId:loggedInId
-		}).then((response)=>{
-			if(response.status === 200){
-				navigate("/GameList");
-			}
 		}).catch((error)=>{
 			console.error(error);
 		})
 	}
 
 	useEffect(()=>{
-		const fetching = async()=>{
-			try{
-				const gameResponse = await fetch(`http://localhost:8080/Game/${gameId}`);
-				const gameResult = await gameResponse.json();
-				setGame(gameResult);
-				
-				const playersResponse = await fetch(`http://localhost:8080/Game/${gameId}/Players`);
-				const playersResult = await playersResponse.json();
-				setPlayers(playersResult);
-			}catch(error){
-				console.error('Error fetching data: ', error)
+		const eventSource = new EventSource(`http://localhost:8080/SubGame/${gameId}`);
+
+		eventSource.addEventListener("GAME", (event)=>{
+			let json = JSON.parse(event.data);
+			setGame(json);
+			if(game===null){
+				return;
 			}
+			switch(game.gameState){
+				case "CREATING":
+					break;
+				case "ENDING":
+					navigate("/GameList");
+					break;
+				default:
+					navigate(`/GameScreen/${gameId}`);
+					break;
+			}
+		});
+
+		eventSource.addEventListener("PLAYER", (event)=>{
+			let json = JSON.parse(event.data);
+			setPlayers(json);
+		});
+
+		eventSource.onerror=(error)=>{
+			console.error("event source error", error)
 		}
-		fetching();
-	}, [gameId]);
+
+		if(eventSource != null){
+			return () => eventSource.close();
+		}
+	}, []);
 	if(game === null || players.length === 0){
 		return null;
 	}

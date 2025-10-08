@@ -4,7 +4,7 @@ import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useLoggedInId } from './App';
 import axios from 'axios';
 
-function GameScreen() {//replace with ids and dice left
+function GameScreen() {
 	let {gameId} = useParams();
 	gameId = parseInt(gameId);
 	let {loggedInId} = useLoggedInId();
@@ -12,25 +12,32 @@ function GameScreen() {//replace with ids and dice left
 	const [players, setPlayers] = useState([]);
 	let [userPlayer, setUserPlayer] = useState(null);
 	const [inGame, setInGame] = useState([]);
+
 	useEffect(()=>{
-		const fetching = async()=>{
-			try{
-				const gameResponse = await fetch(`http://localhost:8080/Game/${gameId}`);
-				const gameResult = await gameResponse.json();
-				setGame(gameResult);
-				
-				const playersResponse = await fetch(`http://localhost:8080/Game/${gameId}/Players`);
-				const playersResult = await playersResponse.json();
-				setPlayers(playersResult);
-				let curPlay = playersResult.filter(p=>p.playerId===loggedInId)
-				setInGame(curPlay.length>0);
-				setUserPlayer(curPlay[0]);
-			}catch(error){
-				console.error('Error fetching data: ', error)
-			}
+		const eventSource = new EventSource(`http://localhost:8080/SubGame/${gameId}`);
+
+		eventSource.addEventListener("GAME", (event)=>{
+			let json = JSON.parse(event.data);
+			setGame(json);
+		});
+
+		eventSource.addEventListener("PLAYER", (event)=>{
+			let json = JSON.parse(event.data);
+			setPlayers(json);
+			let curPlay = json.filter(p=>p.playerId===loggedInId)
+			setInGame(curPlay.length>0);
+			setUserPlayer(curPlay[0]);
+		});
+
+		eventSource.onerror=(error)=>{
+			console.error("event source error", error)
 		}
-		fetching();
-	}, [gameId, loggedInId]);
+
+		if(eventSource != null){
+			return () => eventSource.close();
+		}
+	}, [])
+
 	if(game === null){
 		return(<h1>The game does not exist.</h1>)
 	}
@@ -44,7 +51,7 @@ function GameScreen() {//replace with ids and dice left
 	<div className="GameScreen">
 		<div className="CurrentPlayers">
 		{players.map((player)=>{
-			return <PlayerDiceInfo playerId={player.playerId} diceLeft={player.diceCount} currentPlayer={game.currentPlayer} maxDice={game.maxDice??6}/>
+			return <PlayerDiceInfo key={player.playerId} playerId={player.playerId} diceLeft={player.diceCount} currentPlayer={game.currentPlayer} maxDice={game.maxDice??6}/>
 		})}
 		</div>
 		<hr/>

@@ -14,10 +14,6 @@ function GameList() {
 	useEffect(()=>{
 		const eventSource = new EventSource("http://localhost:8080/SubGameList");
 
-		eventSource.onopen=()=>{
-			console.log("open")
-		}
-
 		eventSource.addEventListener("GAMELIST", (event)=>{
 			let json = JSON.parse(event.data);
 			setActiveGames(json);

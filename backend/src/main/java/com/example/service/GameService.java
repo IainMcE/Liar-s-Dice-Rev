@@ -70,6 +70,7 @@ public class GameService{
 	public Game saveGame(Game game){
 		game = gameRepository.save(game);
 		eventPublisher.publishEvent(new ControllerEvent(this, "GameList", null));
+		eventPublisher.publishEvent(new ControllerEvent(this, "Game", game.getGameId()));
 		return game;
 	}
 

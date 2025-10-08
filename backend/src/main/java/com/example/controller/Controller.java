@@ -5,6 +5,8 @@ import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -39,10 +41,12 @@ public class Controller{
 	@Autowired
 	FriendService friendService;
 	private final List<SseEmitter> emitters = new CopyOnWriteArrayList<>();
+	private final HashMap<Integer, List<SseEmitter>> gameEmitters;
 
 	@Autowired
 	public Controller(){
 		this.random = new Random();
+		gameEmitters = new HashMap<Integer, List<SseEmitter>>();
 	}
 
 	public void setRandom(Random random){
@@ -55,6 +59,12 @@ public class Controller{
 		switch(event.getDestination()){
 			case "GameList":
 				dispatchGameList();
+				break;
+			case "Game":
+				dispatchGame((int)event.getData());
+				break;
+			case "Player":
+				dispatchPlayers((int)event.getData());
 				break;
 			default:
 				System.out.println("Unknown destination: "+event.getDestination());
@@ -110,7 +120,6 @@ public class Controller{
 		// Send existing gamelist on subscription
 		try {
 			List<Integer> currentGames = gameService.getGameIds();
-			System.out.println(currentGames);
 			emitter.send(SseEmitter.event().name("GAMELIST").data(currentGames));
 		} catch (Exception e) {
 			emitter.completeWithError(e);
@@ -139,6 +148,68 @@ public class Controller{
 			return ResponseEntity.status(200).body(gameService.getGameById(gameId));
 		}
 		return ResponseEntity.status(204).body(null);
+	}
+
+	@GetMapping("/SubGame/{gameId}")
+	public SseEmitter subscribeToGameList(@PathVariable("gameId") int gameId){
+		SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+		if(gameEmitters.containsKey(gameId)){
+			gameEmitters.get(gameId).add(emitter);
+		}else{
+			List<SseEmitter> list = new CopyOnWriteArrayList<>();
+			list.add(emitter);
+			gameEmitters.put(gameId, list);
+		}
+
+		emitter.onCompletion(() -> emitters.remove(emitter));
+		emitter.onTimeout(() -> emitters.remove(emitter));
+		emitter.onError((e) -> emitters.remove(emitter));
+
+		// Send existing gamelist on subscription
+		try {
+			Game game = gameService.getGameById(gameId);
+			List<GamePlayer> players = gamePlayerService.getPlayersByGameId(gameId);
+			emitter.send(SseEmitter.event().name("GAME").data(game));
+			emitter.send(SseEmitter.event().name("PLAYER").data(players));
+		} catch (Exception e) {
+			emitter.completeWithError(e);
+		}
+
+		return emitter;
+	}
+
+	public void dispatchGame(int gameId){
+		List<SseEmitter> deadEmitters = new ArrayList<>();
+		Game game = gameService.getGameById(gameId);
+		if(!gameEmitters.containsKey(gameId)){
+			return;
+		}
+		List<SseEmitter> ems = gameEmitters.get(gameId);
+		ems.forEach(emitter->{
+			try{
+				emitter.send(SseEmitter.event().name("GAME").data(game));
+			}catch(Exception e){
+				deadEmitters.add(emitter);
+			}
+		});
+		ems.removeAll(deadEmitters);
+	}
+
+	public void dispatchPlayers(int gameId){
+		List<SseEmitter> deadEmitters = new ArrayList<>();
+		List<GamePlayer> gamePlayers = gamePlayerService.getPlayersByGameId(gameId);
+		if(!gameEmitters.containsKey(gameId)){
+			return;
+		}
+		List<SseEmitter> ems = gameEmitters.get(gameId);
+		ems.forEach(emitter->{
+			try{
+				emitter.send(SseEmitter.event().name("PLAYER").data(gamePlayers));
+			}catch(Exception e){
+				deadEmitters.add(emitter);
+			}
+		});
+		ems.removeAll(deadEmitters);
 	}
 
 	@GetMapping("/Game/{gameId}/Players")
