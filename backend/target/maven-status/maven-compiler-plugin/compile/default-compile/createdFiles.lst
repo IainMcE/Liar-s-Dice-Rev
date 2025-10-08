@@ -2,6 +2,7 @@ com\example\entity\GamePlayer.class
 com\example\service\FriendService.class
 com\example\service\GamePlayerService.class
 com\example\entity\Account.class
+com\example\dto\GamePlayerDTO.class
 com\example\service\AccountService.class
 com\example\entity\Game.class
 com\example\controller\ControllerEvent.class

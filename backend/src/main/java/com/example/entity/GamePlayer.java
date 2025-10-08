@@ -15,7 +15,9 @@ public class GamePlayer {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private Integer entryId;
 	private Integer gameId;
-	private Integer playerId;
+	@ManyToOne(fetch=FetchType.LAZY)
+	@JoinColumn(name="playerId")
+	private Account account;
 	private Integer diceCount;
 	private Integer die1;
 	private Integer die2;
@@ -27,14 +29,22 @@ public class GamePlayer {
 	public GamePlayer(){}
 	public GamePlayer(int gameId, int playerId){
 		this.gameId = gameId;
-		this.playerId = playerId;
+		Account account = new Account();
+		account.setAccountId(playerId);
+		this.account = account;
 		this.diceCount = 6;
 	}
 	public GamePlayer(int entryId, int gameId, int playerId, int diceCount){
 		this.entryId = entryId;
 		this.gameId = gameId;
-		this.playerId = playerId;
+		Account account = new Account();
+		account.setAccountId(playerId);
+		this.account = account;
 		this.diceCount = diceCount;
+	}
+
+	public Integer getPlayerId(){
+		return account.getAccountId();
 	}
 
 	public void setRollByDie(int index, int roll){
@@ -99,10 +109,10 @@ public class GamePlayer {
 				return false;
 		} else if (!gameId.equals(other.gameId))
 			return false;
-		if (playerId == null) {
-			if (other.playerId != null)
+		if (getPlayerId() == null) {
+			if (other.getPlayerId() != null)
 				return false;
-		} else if (!playerId.equals(other.playerId))
+		} else if (!getPlayerId().equals(other.getPlayerId()))
 			return false;
 		if (diceCount == null) {
 			if (other.diceCount != null)
@@ -116,7 +126,7 @@ public class GamePlayer {
 	public String toString() {
 		return "GamePlayer{" +
 				"gameId=" + gameId +
-				", playerId='" + playerId + '\'' +
+				", playerId='" + getPlayerId() + '\'' +
 				", diceCount='" + diceCount + '\'' +
 				", dice rolls: [" + die1+","+ die2+","+ die3+","+ die4+","+ die5+","+ die6+","+ ']' +
 				'}';

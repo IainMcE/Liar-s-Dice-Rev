@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import './PlayerProfile.css'
 import { useParams } from 'react-router-dom';
 import {Link} from 'react-router-dom';
-import { useLoggedInId, type User, type FriendData, type GamePlayer } from './App';
+import { useLoggedInId, type User, type FriendData } from './App';
 import axios from 'axios';
 
 function PlayerProfile(){
@@ -86,7 +86,7 @@ function DisplayFriendList({userId}: {userId: number}){
 }
 
 function FriendListRow({friendId}: {friendId: number}){
-	const [playerData, setPlayerData] = useState<GamePlayer|null>(null);
+	const [playerData, setPlayerData] = useState<User|null>(null);
 	useEffect(()=>{
 		fetch('http://localhost:8080/User/'+friendId)
 			.then(response=>response.json())
@@ -100,7 +100,8 @@ function FriendListRow({friendId}: {friendId: number}){
 
 function MiniProfile({userId}: {userId: number}){
 	//playerData = fetch short display info by id
-	const [playerData, setPlayerData] = useState<GamePlayer|null>(null);
+	console.log(userId)
+	const [playerData, setPlayerData] = useState<User|null>(null);
 	useEffect(()=>{
 		fetch('http://localhost:8080/User/'+userId)
 			.then(response=>{
@@ -109,12 +110,12 @@ function MiniProfile({userId}: {userId: number}){
 				}
 				return response.json();
 			})
-			.then(data => setPlayerData(data))
+			.then(data => {console.log(data);setPlayerData(data)})
 			.catch(error => console.error(userId, 'Error fetching data: ', error))
 	}, [userId]);
 	return(
 		<div className="miniUserProfile">
-			<Link to={"/User/"+userId} className="miniUsername">{playerData?.username??"Loading..."}</Link>
+			<Link to={"/User/"+userId} className="miniUsername">{playerData?.username??playerData+""}</Link>
 			<div className="miniAddFriend">
 				<AddFriendButton userId={userId}/>
 			</div>

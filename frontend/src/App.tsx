@@ -26,9 +26,8 @@ export type Game = {
 
 export type GamePlayer = {
 	playerId: number;
-	username: string;
+	username:string;
 	diceCount:number;
-	diceLeft:number;
 	die1:number;
 	die2:number;
 	die3:number;
@@ -85,7 +84,11 @@ function App() {
 			<LoggedInIdProvider>
 			<Router>
 				<nav className="NavHeader">
-					<Link to="/GameList">Active Games</Link>
+					<div className="NavLeft">
+						<HomeIcon/>
+						<Link to="/GameList">Active Games</Link>
+					</div>
+					
 					<UserIcon/>
 				</nav>
 				<div className="MainDisplay">
@@ -113,6 +116,16 @@ function App() {
 function Missing(){
 	return(
 		<h2>Page Not Found</h2>
+	)
+}
+
+function HomeIcon(){
+	let navigate = useNavigate();
+	const HomeNav = ()=>{
+		navigate("/");
+	}
+	return(
+		<img src="homeOutline.png" alt="Home Page" className="HomeNav" onClick={HomeNav}/>
 	)
 }
 
@@ -185,9 +198,11 @@ function UserIcon(){
 const UserIconPopUp = ()=>{
 	const {loggedInId} = useLoggedInId();
 	let result;
-	if(loggedInId < 0){
+	console.log(loggedInId)
+	if(loggedInId <= 0){
 		result = <MiniLogin/>
 	}else{
+		console.log(loggedInId)
 		result = <MiniProfile userId={loggedInId}/>
 	}
 	return(

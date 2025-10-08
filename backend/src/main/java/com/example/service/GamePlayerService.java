@@ -35,7 +35,7 @@ public class GamePlayerService{
 	}
 
 	public GamePlayer getEntityByGameAndUser(int gameId, int playerId){
-		return gamePlayerRepository.findByGameIdAndPlayerId(gameId, playerId);
+		return gamePlayerRepository.findByGameIdAndAccountAccountId(gameId, playerId);
 	}
 
 	public void removeGamePlayer(GamePlayer gamePlayer){

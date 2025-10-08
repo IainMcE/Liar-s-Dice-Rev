@@ -1,6 +1,6 @@
 drop table if exists game;
-drop table if exists account;
 drop table if exists gamePlayer;
+drop table if exists account;
 drop table if exists friend;
 create table account (
 	accountId int primary key auto_increment,

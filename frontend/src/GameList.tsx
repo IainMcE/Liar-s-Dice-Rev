@@ -2,7 +2,7 @@ import './GameList.css'
 import {MiniUser, DisplayMiniUser, hideMiniUser, useDisplayUser} from './MiniUser';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import { useLoggedInId, type Game, type GamePlayer } from './App';
+import { useLoggedInId, type Game, type GamePlayer, type User } from './App';
 import axios from 'axios';
 
 //requires integration with backend for info on games in set up (host username, number players, visibility)
@@ -58,10 +58,14 @@ function TableRow({gameId}: {gameId: number}){
 				const gameResult = await gameResponse.json();
 				setGame(gameResult);
 				
-				const hostResponse = await fetch(`http://localhost:8080/Friends/${gameResult.host}/${loggedInId}`);
-				if(hostResponse.status === 200){
-					const hostResult = await hostResponse.json();
-					setHostFriend(hostResult.status==="CONFIRMED");
+				if(loggedInId>=0){
+					const hostResponse = await fetch(`http://localhost:8080/Friends/${gameResult.host}/${loggedInId}`);
+					if(hostResponse.status === 200){
+						const hostResult = await hostResponse.json();
+						setHostFriend(hostResult.status==="CONFIRMED");
+					}else{
+						setHostFriend(false);
+					}
 				}else{
 					setHostFriend(false);
 				}
@@ -79,7 +83,7 @@ function TableRow({gameId}: {gameId: number}){
 		}
 		fetching();
 	}, [gameId, loggedInId]);
-	if(game===null || !hostFriend){
+	if(game===null){
 		return(<div>Loading...</div>)
 	}
 	if(game.visibility === "INVITE" && !inGame){
@@ -100,7 +104,7 @@ function TableRow({gameId}: {gameId: number}){
 }
 
 function HostName({hostId}: {hostId: number}){
-	const [host, setHost] = useState<GamePlayer | null>(null);
+	const [host, setHost] = useState<User | null>(null);
 	useEffect(()=>{
 		fetch(`http://localhost:8080/User/${hostId}`)
 			.then(response=>response.json())
@@ -188,7 +192,7 @@ function JoinButton({gameId, inGame, gameState}: {gameId:number, inGame:boolean,
 	}
 	return(
 		<div className="joinColumn">
-			<button className="joinButton" onClick={JoinGame} disabled={!inGame && gameState!=="CREATING"}>{inGame?"Return":"Join"}</button>
+			<button className="joinButton" onClick={JoinGame} disabled={(!inGame && gameState!=="CREATING")||loggedInId<0}>{inGame?"Return":"Join"}</button>
 		</div>
 	)
 }

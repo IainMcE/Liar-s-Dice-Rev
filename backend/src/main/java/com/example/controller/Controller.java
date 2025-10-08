@@ -7,6 +7,7 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.Map;
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -27,6 +28,7 @@ import com.example.service.FriendService;
 import com.example.entity.Friend;
 import com.example.enums.FriendStatus;
 import com.example.controller.ControllerEvent;
+import com.example.dto.GamePlayerDTO;
 
 
 @RestController
@@ -168,7 +170,7 @@ public class Controller{
 		// Send existing gamelist on subscription
 		try {
 			Game game = gameService.getGameById(gameId);
-			List<GamePlayer> players = gamePlayerService.getPlayersByGameId(gameId);
+			List<GamePlayerDTO> players = getPlayers(gameId).getBody();
 			emitter.send(SseEmitter.event().name("GAME").data(game));
 			emitter.send(SseEmitter.event().name("PLAYER").data(players));
 		} catch (Exception e) {
@@ -197,7 +199,7 @@ public class Controller{
 
 	public void dispatchPlayers(int gameId){
 		List<SseEmitter> deadEmitters = new ArrayList<>();
-		List<GamePlayer> gamePlayers = gamePlayerService.getPlayersByGameId(gameId);
+		List<GamePlayerDTO> gamePlayers = getPlayers(gameId).getBody();
 		if(!gameEmitters.containsKey(gameId)){
 			return;
 		}
@@ -213,10 +215,11 @@ public class Controller{
 	}
 
 	@GetMapping("/Game/{gameId}/Players")
-	public ResponseEntity<List<GamePlayer>> getPlayers(
-		@PathVariable("gameId") int gameId
-	){
-		return ResponseEntity.status(200).body(gamePlayerService.getPlayersByGameId(gameId));
+	public ResponseEntity<List<GamePlayerDTO>> getPlayers(@PathVariable("gameId") int gameId){
+		List<GamePlayerDTO> result = gamePlayerService.getPlayersByGameId(gameId).stream()
+			.map(player -> new GamePlayerDTO(player))
+       		.collect(Collectors.toList());
+		return ResponseEntity.status(200).body(result);
 	}
 
 	@GetMapping({"/User/{userId}/Friends", "/Friends/{userId}"})
@@ -305,7 +308,7 @@ public class Controller{
 		GamePlayer toRemove = gamePlayerService.getEntityByGameAndUser(gameId, gamePlayer.getPlayerId());
 		List<GamePlayer> players = gamePlayerService.getPlayersByGameId(gameId);
 		if(toRemove != null){
-			if(game.getCurrentPlayer() == toRemove.getPlayerId()){
+			if(game.getCurrentPlayer() == toRemove.getAccount().getAccountId()){
 				game = gameService.nextPlayer(game, players);
 			}
 			gamePlayerService.removeGamePlayer(toRemove);
@@ -348,7 +351,8 @@ public class Controller{
 	}
 
 	@PostMapping("/Game/Challenge")
-	public ResponseEntity<Game> challengeBet(@RequestBody int gameId){
+	public ResponseEntity<Game> challengeBet(@RequestBody Game bet){
+		int gameId = bet.getGameId();
 		Game game = gameService.getGameById(gameId);
 		gameService.challengeBet(game);
 		return ResponseEntity.status(200).body(gameService.getGameById(gameId).displayInformation());

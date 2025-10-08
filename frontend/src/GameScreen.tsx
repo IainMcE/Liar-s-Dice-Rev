@@ -29,7 +29,7 @@ function GameScreen() {
 			setUserPlayer(curPlay[0]);
 		});
 
-		eventSource.onerror=(error)=>{
+		eventSource.onerror=(error: Event)=>{
 			console.error("event source error", error)
 		}
 
@@ -70,8 +70,8 @@ function PlayerDiceInfo({player, currentPlayer, maxDice}: {player:GamePlayer, cu
 				{player.playerId===loggedInId?"You":(player.username)}
 			</header>
 			<div>Dice in play:</div>
-			<img className="DiceLeft" src={"/dice/"+player.diceLeft+".png"} alt=""></img>
-			<div className="LostDice">Lost dice: {maxDice-player.diceLeft}</div>
+			<img className="DiceLeft" src={"/dice/"+player.diceCount+".png"} alt=""></img>
+			<div className="LostDice">Lost dice: {maxDice-player.diceCount}</div>
 		</div>
 	);
 }
@@ -79,8 +79,8 @@ function PlayerDiceInfo({player, currentPlayer, maxDice}: {player:GamePlayer, cu
 function PreviousBet({game, players}: {game:Game, players:GamePlayer[]}){
 	let {loggedInId} = useLoggedInId();
 	let displayText = game.betCount === 0 || game.betDie === 0;//both should be >1 if a valid guess was made
-	const playerData = players.filter(p=>p.playerId===game.currentPlayer)[0];
-	const previousPlayerData = players.filter(p=>p.playerId===game.previousPlayer)[0];
+	let previousPlayer = players.filter(p=>p.playerId === game.previousPlayer)[0] as GamePlayer
+	let currentPlayer = players.filter(p=>p.playerId === game.currentPlayer)[0] as GamePlayer
 
 	if(displayText){
 		if(game.currentPlayer === loggedInId){
@@ -92,7 +92,7 @@ function PreviousBet({game, players}: {game:Game, players:GamePlayer[]}){
 		}else{
 			return (
 				<div className="prevBet">
-					{playerData?.username??""} is making the first bet
+					{currentPlayer.username} is making the first bet
 				</div>
 			)
 		}
@@ -101,19 +101,19 @@ function PreviousBet({game, players}: {game:Game, players:GamePlayer[]}){
 		if(game.previousPlayer === loggedInId){
 			return(
 				<div className="prevBet">
-					{playerData?.username??""} challenged your bet of {game.betCount} {game.betDie}s
+					{currentPlayer.username} challenged your bet of {game.betCount} {game.betDie}s
 				</div>
 			)
 		}else if(game.currentPlayer === loggedInId){
 			return(
 				<div className="prevBet">
-					You challenged {previousPlayerData?.username??""}'s bet of {game.betCount} {game.betDie}s
+					You challenged {previousPlayer.username}'s bet of {game.betCount} {game.betDie}s
 				</div>
 			)
 		}else{
 			return(
 				<div className="prevBet">
-					{playerData?.username??""} challenged {previousPlayerData?.username??""}'s bet of {game.betCount} {game.betDie}s
+					{currentPlayer.username} challenged {previousPlayer.username}'s bet of {game.betCount} {game.betDie}s
 				</div>
 			)
 		}
@@ -128,7 +128,7 @@ function PreviousBet({game, players}: {game:Game, players:GamePlayer[]}){
 		}else{
 			return(
 				<div className="prevBet">
-					There were {game.actualCount} {game.betDie}s. {game.loserId===game.previousPlayer?(previousPlayerData?.username??""):(playerData?.username??"")} loses 1 die.
+					There were {game.actualCount} {game.betDie}s. {game.loserId===game.previousPlayer?previousPlayer.username:currentPlayer.username} loses 1 die.
 				</div>
 			)
 		}
@@ -142,7 +142,7 @@ function PreviousBet({game, players}: {game:Game, players:GamePlayer[]}){
 	}else{
 		return(
 			<div className="prevBet">
-				{previousPlayerData?.username??""} bets there is: {game.betCount} {game.betDie}s
+				{previousPlayer.username} bets there is: {game.betCount} {game.betDie}s
 			</div>
 		)
 	}
@@ -171,9 +171,15 @@ function PlayerDie({roll}: {roll:number}){
 function BetUI({game, inGame, setGame}: {game:Game, inGame:boolean, setGame:React.Dispatch<React.SetStateAction<Game|null>>}){
 	let {loggedInId} = useLoggedInId();
 	let navigate = useNavigate();
-	let [count, setCount] = useState(game.betCount+1);
-	let [die, setDie] = useState(game.betDie);
+	let [count, setCount] = useState(Math.max(game.betCount+1, 1));
+	let [die, setDie] = useState(Math.max(game.betDie, 1));
 	let lockOut = game.gameState !== "PLAYING";
+
+	useEffect(()=>{
+		setDie(Math.max(game.betDie, 1));
+		setCount(Math.max(game.betCount+1, 1))
+	}, [game])
+
 	function leaveGame(){
 		axios.post('http://localhost:8080/Game/Leave', {
 			gameId:game.gameId,
@@ -215,7 +221,11 @@ function BetUI({game, inGame, setGame}: {game:Game, inGame:boolean, setGame:Reac
 		})
 	}
 	function challengeBet(){
-		
+		axios.post('http://localhost:8080/Game/Challenge', {
+			gameId:game.gameId
+		}).catch((error)=>{
+			console.error(error);
+		})
 	}
 	if(!inGame){
 		return(

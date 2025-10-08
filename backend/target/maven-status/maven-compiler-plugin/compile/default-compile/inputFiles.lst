@@ -13,6 +13,7 @@ C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\sr
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\enums\GameState.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\entity\Game.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\service\AccountService.java
+C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\dto\GamePlayerDTO.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\entity\Account.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\enums\FriendStatus.java
 C:\Users\Iain McEwen\Desktop\programs\Liar's Dice Rev\liar-s-dice-rev\backend\src\main\java\com\example\service\GamePlayerService.java
