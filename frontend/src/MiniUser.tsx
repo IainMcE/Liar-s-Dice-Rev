@@ -1,18 +1,27 @@
 import './MiniUser.css';
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import { MiniProfile } from './PlayerProfile';
 
-const DisplayUserContext = createContext();
+const DisplayUserContext = createContext<DisplayUserContextType>({id:0, setId:()=>{}});
+
+interface DisplayUserContextType{
+	id:number;
+	setId: React.Dispatch<React.SetStateAction<number>>;
+}
 
 export const useDisplayUser = () => useContext(DisplayUserContext);
 
-export function DisplayUserProvider({ children }) {
+export function DisplayUserProvider({ children }: DisplayUserContextProviderProps) {
 	const [id, setId] = useState(0);
 	return(
 		<DisplayUserContext.Provider value={{ id, setId }}>
 			{children}
 		</DisplayUserContext.Provider>
 	);
+}
+
+interface DisplayUserContextProviderProps{
+	children: ReactNode;
 }
 
 function MiniUser(){
@@ -24,10 +33,15 @@ function MiniUser(){
 	)
 }
 
-function DisplayMiniUser(event, alignmentX, alignmentY){
+function DisplayMiniUser(event: React.MouseEvent<HTMLDivElement, MouseEvent>, alignmentX: string, alignmentY: string){
 	event.stopPropagation();
-	let elStyle = document.querySelector(".MiniUserDisplay").style
-	let bRect = event.target.getBoundingClientRect();
+	let el = document.querySelector(".MiniUserDisplay") as HTMLElement;
+	let elStyle = el.style
+	let clicked = event.target as Element;
+	if(clicked === null){
+		return;
+	}
+	let bRect = clicked.getBoundingClientRect();
 	if(alignmentX === "left"){
 		elStyle.left = bRect.right+"px";
 		elStyle.right = "";
@@ -47,8 +61,8 @@ function DisplayMiniUser(event, alignmentX, alignmentY){
 }
 
 function hideMiniUser(){
-	let elStyle = document.querySelector(".MiniUserDisplay").style;
-	elStyle.visibility = "hidden";
+	let el = document.querySelector(".MiniUserDisplay") as HTMLElement;
+	el.style.visibility = "hidden";
 }
 
 export {MiniUser, hideMiniUser, DisplayMiniUser};

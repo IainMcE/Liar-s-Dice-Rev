@@ -1,16 +1,15 @@
 import './GameLobby.css';
-import { useLoggedInId } from "./App";
+import { useLoggedInId, type Game, type GamePlayer } from "./App";
 import { useNavigate, useParams } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import axios from 'axios';
 
-
 function GameLobby(){
-	let {gameId} = useParams();
-	gameId = parseInt(gameId);
+	let {gameId:idString} = useParams<{gameId:string}>();
+	let gameId = idString?parseInt(idString):NaN;
 	let {loggedInId} = useLoggedInId();
-	let [game, setGame] = useState(null);
-	let [players, setPlayers] = useState([]);
+	let [game, setGame] = useState<Game|null>(null);
+	let [players, setPlayers] = useState<GamePlayer[]>([]);
 	let navigate = useNavigate();
 
 	function startGame(){
@@ -26,7 +25,8 @@ function GameLobby(){
 	}
 
 	function changeVisibility(){
-		let visibility = document.querySelector(".visibilitySelect").value;
+		let visibilityEl = document.querySelector(".visibilitySelect") as HTMLSelectElement;
+		let visibility = visibilityEl.value;
 		axios.post('http://localhost:8080/Game/Visibility', {
 			gameId:gameId,
 			visibility: visibility
@@ -100,18 +100,17 @@ function GameLobby(){
 					</select>
 				</div>
 				<button className="StartGame" disabled={loggedInId!==game.host}onClick={startGame}>Start Game</button>
-				{/* TODO Other uses nav to game screen when game starts */}
 				<div className="Invite">
 					<header>Invites</header>
-					TODO What do I do here?
+					TODO Future Implementation
 				</div>
 			</div>
 		</div>
 	)
 }
 
-function PlayerView({playerId, hostId}){
-	let [player, setPlayer] = useState([]);
+function PlayerView({playerId, hostId}: {playerId: number, hostId: number}){
+	let [player, setPlayer] = useState<GamePlayer|null>(null);
 	useEffect(()=>{
 		fetch(`http://localhost:8080/User/${playerId}`)
 			.then(response=>response.json())
@@ -120,7 +119,7 @@ function PlayerView({playerId, hostId}){
 	}, [playerId])
 	return(
 		<div className="PlayerView">
-			<header>{player.username}</header>
+			<header>{player?.username??"Loading..."}</header>
 			{hostId===playerId?<div className='isHost'>Host</div>:null}
 		</div>
 	)

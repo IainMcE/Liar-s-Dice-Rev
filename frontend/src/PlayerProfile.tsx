@@ -2,13 +2,13 @@ import { useEffect, useState } from 'react';
 import './PlayerProfile.css'
 import { useParams } from 'react-router-dom';
 import {Link} from 'react-router-dom';
-import { useLoggedInId } from './App';
+import { useLoggedInId, type User, type FriendData, type GamePlayer } from './App';
 import axios from 'axios';
 
 function PlayerProfile(){
-	const [playerData, setPlayerData] = useState(null);
-	let {id} = useParams();
-	id = parseInt(id);
+	const [playerData, setPlayerData] = useState<User|null>(null);
+	let {id: idString} = useParams();
+	let id = idString?parseInt(idString):NaN;
 	useEffect(()=>{
 		fetch('http://localhost:8080/User/'+id)
 			.then(response=>response.json())
@@ -18,7 +18,7 @@ function PlayerProfile(){
 	return(
 		<div className="userProfile">
 			<header className="username">{playerData?.username??"Loading..."}</header>
-			<div className="GameStats">Win rate: {playerData!=null?(playerData.wins/(playerData.wins+playerData.losses)*100):0}%</div>
+			<div className="GameStats">Win rate: {playerData!=null?(playerData?.wins/(playerData?.wins+playerData?.losses)*100):0}%</div>
 			<div className="addFriend">
 				<AddFriendButton userId={id}/>
 			</div>
@@ -33,10 +33,9 @@ function PlayerProfile(){
 	)
 }
 
-function DisplayFriendList(input){
-	let userId = input.userId;
+function DisplayFriendList({userId}: {userId: number}){
 	const {loggedInId} = useLoggedInId();
-	const [friendData, setFriendData] = useState([]);
+	const [friendData, setFriendData] = useState<FriendData[]>([]);
 	useEffect(()=>{
 		fetch('http://localhost:8080/Friends/'+userId)
 			.then(response=>response.json())
@@ -86,9 +85,8 @@ function DisplayFriendList(input){
 	}
 }
 
-function FriendListRow(input){
-	let friendId = input.friendId;
-	const [playerData, setPlayerData] = useState(null);
+function FriendListRow({friendId}: {friendId: number}){
+	const [playerData, setPlayerData] = useState<GamePlayer|null>(null);
 	useEffect(()=>{
 		fetch('http://localhost:8080/User/'+friendId)
 			.then(response=>response.json())
@@ -100,14 +98,13 @@ function FriendListRow(input){
 	)
 }
 
-function MiniProfile(userId){
+function MiniProfile({userId}: {userId: number}){
 	//playerData = fetch short display info by id
-	userId = userId.userId;	//why does it do this?
-	const [playerData, setPlayerData] = useState(null);
+	const [playerData, setPlayerData] = useState<GamePlayer|null>(null);
 	useEffect(()=>{
 		fetch('http://localhost:8080/User/'+userId)
 			.then(response=>{
-				if(response.status === 204 || response.headers.get("Content-Length")=== 0){
+				if(response.status === 204 || parseInt(response.headers.get("Content-Length")??"0")=== 0){
 					return null;
 				}
 				return response.json();
@@ -125,14 +122,13 @@ function MiniProfile(userId){
 	)
 }
 
-function AddFriendButton(input){
+function AddFriendButton({userId}: {userId: number}){
 	const {loggedInId} = useLoggedInId();
-	let userId = input.userId;
-	const [friendship, setFriendship] = useState(null);
+	const [friendship, setFriendship] = useState<FriendData|null>(null);
 	useEffect(()=>{
 		fetch(`http://localhost:8080/Friends/${loggedInId}/${userId}`)
 			.then(response=>{
-				if(response.status === 204 || response.headers.get("Content-Length")=== 0){
+				if(response.status === 204 || parseInt(response.headers.get("Content-Length")??"0")===0){
 					return null;
 				}
 				return response.json();
@@ -144,22 +140,17 @@ function AddFriendButton(input){
 	function AddFriendPressed(){
 		let friend = {userId1: loggedInId, userId2: userId}
 		let post = 'http://localhost:8080/Friends/'
-		switch(friendship?.status??null){
-			case "CONFIRMED":
-				post += 'Remove'
-				break;
-			case "PENDING":
-				if(friendship.userId1 === loggedInId){
-					post += 'Remove';
-				}else{
-					post += 'Accept';
-				}
-				break;
-			default:
-				post += 'Initiate';
-				break;
+		if(friendship===null){
+			post+='Initiate';
+		}else if(friendship.status==="CONFIRMED"){
+			post+='Remove';
+		}else if(friendship.status==="PENDING"){
+			if(friendship.userId1 === loggedInId){
+				post += 'Remove';
+			}else{
+				post += 'Accept';
+			}
 		}
-		console.log(friendship?.status??null, post, friend)
 		axios.post(post, friend).then((response)=>{
 			if(response.status === 200){
 				if((typeof(response.data)==="string" && response.data.length > 0)

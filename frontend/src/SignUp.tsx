@@ -1,15 +1,24 @@
 import './SignUp.css';
 import {useNavigate} from 'react-router-dom';
-import { useState, createContext, useContext } from 'react';
+import { useState, createContext, useContext, type ReactNode } from 'react';
 import { useLoggedInId } from './App';
 import axios from 'axios';
 
-const SignUpErrorContext = createContext();
+const SignUpErrorContext = createContext<SignUpErrorContextType>({signUpError:"", setSignUpError:()=>{}});
+
+interface SignUpErrorContextType{
+	signUpError: string;
+	setSignUpError: React.Dispatch<React.SetStateAction<string>>;
+}
 
 const useSignUpError = () => useContext(SignUpErrorContext);
 
-function SignUpErrorProvider({ children }) {
-	const [signUpError, setSignUpError] = useState(null);
+interface SignUpErrorProviderProps{
+	children: ReactNode;
+}
+
+function SignUpErrorProvider({ children }: SignUpErrorProviderProps) {
+	const [signUpError, setSignUpError] = useState("");
 	return(
 		<SignUpErrorContext.Provider value={{signUpError, setSignUpError}}>
 			{children}
@@ -45,20 +54,24 @@ function SignUpForm(){
 	let {setSignUpError} = useSignUpError();
 	let {setLoggedInId} = useLoggedInId();
 
-	function KeyHandle(e){
+	function KeyHandle(e: React.KeyboardEvent<HTMLFormElement>){
 		if(e.key === "Enter"){
 			e.preventDefault();
-			document.querySelector('.SignUpForm input[type="submit"]').click();
+			let el = document.querySelector('.SignUpForm input[type="submit"]') as HTMLElement
+			el.click();
 		}
 	}
 
-	function HandleSignUp(e){
+	function HandleSignUp(e: React.FormEvent<HTMLFormElement>){
 		e.preventDefault();
 		//get username
-		let usernameInput = document.querySelector("#signUpUsername").value;
+		let user = document.querySelector("#signUpUsername") as HTMLInputElement
+		let usernameInput = user.value;
 		//get password
-		let passwordInput = document.querySelector("#signUpPassword").value;
-		let passwordCheck = document.querySelector("#repeatPassword").value;
+		let pass = document.querySelector("#signUpPassword") as HTMLInputElement
+		let passwordInput = pass.value;
+		let passCheck = document.querySelector("#repeatPassword") as HTMLInputElement
+		let passwordCheck = passCheck.value;
 		if(passwordInput !== passwordCheck){
 			setSignUpError("Passwords must match");
 			return;
@@ -76,7 +89,7 @@ function SignUpForm(){
 			password:passwordInput
 		}).then((response)=>{
 			if(response.status === 200){
-				setSignUpError(null);
+				setSignUpError("");
 				let userId = response.data.accountId;
 				setLoggedInId(userId);
 				navigate(`/User/${userId}`);

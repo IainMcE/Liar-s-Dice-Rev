@@ -1,15 +1,24 @@
 import './Login.css'
 import {useNavigate} from 'react-router-dom';
-import { useState, useContext, createContext } from 'react';
-import {hideUserIconPopUp, useLoggedInId} from './App.js';
+import { useState, useContext, createContext, type ReactNode} from 'react';
+import {hideUserIconPopUp, useLoggedInId} from './App';
 import axios from 'axios';
 
-const LoginErrorContext = createContext();
+const LoginErrorContext = createContext<LogInErrorContextType>({loginError:"", setLoginError:()=>{}});
+
+interface LogInErrorContextType{
+	loginError: string;
+	setLoginError: React.Dispatch<React.SetStateAction<string>>;
+}
 
 const useLoginError = () => useContext(LoginErrorContext);
 
-function LoginErrorProvider({ children }) {
-	const [loginError, setLoginError] = useState(null);
+interface LogInErrorProviderProps{
+	children: ReactNode;
+}
+
+function LoginErrorProvider({ children }: LogInErrorProviderProps) {
+	const [loginError, setLoginError] = useState("");
 	return(
 		<LoginErrorContext.Provider value={{loginError, setLoginError}}>
 			{children}
@@ -73,30 +82,33 @@ function MiniLogin(){
 	)
 }
 
-function LoginForm({children}){
+function LoginForm({children}: {children: ReactNode}){
 	const navigate = useNavigate();
 	let {setLoginError} = useLoginError();
 	let {setLoggedInId} = useLoggedInId();
 
-	function KeyHandle(e){
-		if(e.key === "Enter"){
-			e.preventDefault();
-			document.querySelector('.LoginForm input[type="submit"]').click();
+	function KeyHandle(event: React.KeyboardEvent<HTMLFormElement>){
+		if(event.key === "Enter"){
+			event.preventDefault();
+			let el = document.querySelector('.LoginForm input[type="submit"]') as HTMLElement
+			el.click();
 		}
 	}
 
-	function HandleLogin(e){
-		e.preventDefault();
+	function HandleLogin(event: React.FormEvent<HTMLFormElement>){
+		event.preventDefault();
 		//get username
-		let usernameInput = document.querySelector("#username").value;
+		let user = document.querySelector("#username") as HTMLInputElement
+		let usernameInput = user.value;
 		//get password
-		let passwordInput = document.querySelector("#password").value;
+		let pass = document.querySelector("#password") as HTMLInputElement
+		let passwordInput = pass.value;
 		axios.post('http://localhost:8080/Login', {
 			username:usernameInput,
 			password:passwordInput
 		}).then((response)=>{
 			if(response.status === 200){
-				setLoginError(null);
+				setLoginError("");
 				let userId = response.data.accountId;
 				setLoggedInId(userId);
 				hideUserIconPopUp();

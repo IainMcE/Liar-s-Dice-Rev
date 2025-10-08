@@ -1,8 +1,8 @@
 import './GameList.css'
-import {MiniUser, DisplayMiniUser, hideMiniUser, useDisplayUser} from './MiniUser.js';
+import {MiniUser, DisplayMiniUser, hideMiniUser, useDisplayUser} from './MiniUser';
 import {useEffect, useState} from 'react';
 import {useNavigate} from 'react-router-dom';
-import { useLoggedInId } from './App.js';
+import { useLoggedInId, type Game, type GamePlayer } from './App';
 import axios from 'axios';
 
 //requires integration with backend for info on games in set up (host username, number players, visibility)
@@ -38,7 +38,7 @@ function GameList() {
 			<div className="spectateColumn">Spectate</div>
 		</header>
 		<div>
-			{activeGames.map((gameId)=>{
+			{activeGames.map((gameId: number)=>{
 				return <TableRow key={gameId.toString()} gameId={gameId}/>
 			})}
 		</div>
@@ -46,11 +46,10 @@ function GameList() {
 	);
 }
 
-function TableRow(input){
-	let gameId = input.gameId;
+function TableRow({gameId}: {gameId: number}){
 	const {loggedInId} = useLoggedInId();
-	const [game, setGame] = useState(null);
-	const [hostFriend, setHostFriend] = useState(null);
+	const [game, setGame] = useState<Game | null>(null);
+	const [hostFriend, setHostFriend] = useState(false);
 	let [inGame, setInGame] = useState(false);
 	useEffect(()=>{
 		const fetching = async () =>{
@@ -69,7 +68,7 @@ function TableRow(input){
 
 				const inGameResponse = await fetch(`http://localhost:8080/Game/${gameId}/Players`);
 				if(inGameResponse.status === 200){
-					const inGameResult = await inGameResponse.json();
+					const inGameResult: GamePlayer[] = await inGameResponse.json();
 					setInGame(inGameResult.filter(p=>p.playerId===loggedInId).length>0);
 				}else{
 					setInGame(false);
@@ -80,7 +79,7 @@ function TableRow(input){
 		}
 		fetching();
 	}, [gameId, loggedInId]);
-	if(game===null || hostFriend == null){
+	if(game===null || !hostFriend){
 		return(<div>Loading...</div>)
 	}
 	if(game.visibility === "INVITE" && !inGame){
@@ -100,9 +99,8 @@ function TableRow(input){
 	)
 }
 
-function HostName(input){
-	let hostId = input.hostId;
-	const [host, setHost] = useState(null);
+function HostName({hostId}: {hostId: number}){
+	const [host, setHost] = useState<GamePlayer | null>(null);
 	useEffect(()=>{
 		fetch(`http://localhost:8080/User/${hostId}`)
 			.then(response=>response.json())
@@ -124,8 +122,7 @@ function HostName(input){
 	)
 }
 
-function PlayerCount(input){
-	let gameId = input.gameId;
+function PlayerCount({gameId}: {gameId:number}){
 	let [count, setCount] = useState(null);
 	useEffect(()=>{
 		fetch(`http://localhost:8080/Game/${gameId}/Players`)
@@ -141,7 +138,7 @@ function PlayerCount(input){
 	)
 }
 
-function SpectateButton({gameId, inGame}){
+function SpectateButton({gameId, inGame}: {gameId:number, inGame:boolean}){
 	const navigate = useNavigate();
 	function SpectateGame(){
 		fetch(`http://localhost:8080/Game/${gameId}`)
@@ -150,10 +147,10 @@ function SpectateButton({gameId, inGame}){
 				let state = data.gameState;
 				if(state === "CREATING"){
 					navigate(`/GameLobby/${gameId}`);
-				}else if(state === "PLAYING"){
-					navigate(`/GameScreen/${gameId}`);
-				}else{
+				}else if(state === "ENDING"){
 					alert("The game you are attempting to join has ended");
+				}else{
+					navigate(`/GameScreen/${gameId}`);
 				}
 			})
 			.catch(error=>{
@@ -168,7 +165,7 @@ function SpectateButton({gameId, inGame}){
 	)
 }
 
-function JoinButton({gameId, inGame, gameState}){
+function JoinButton({gameId, inGame, gameState}: {gameId:number, inGame:boolean, gameState: string}){
 	let {loggedInId} = useLoggedInId();
 	const navigate = useNavigate();
 	function JoinGame(){
@@ -179,10 +176,10 @@ function JoinButton({gameId, inGame, gameState}){
 				let state = response.data.gameState;
 				if(state === "CREATING"){
 					navigate(`/GameLobby/${gameId}`);
-				}else if(state === "PLAYING"){
-					navigate(`/GameScreen/${gameId}`);
-				}else{
+				}else if(state === "ENDING"){
 					alert("The game you are attempting to join has ended");
+				}else{
+					navigate(`/GameScreen/${gameId}`);
 				}
 			}
 		}).catch((error)=>{

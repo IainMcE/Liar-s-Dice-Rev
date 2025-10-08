@@ -1,17 +1,17 @@
 import './GameScreen.css'
 import {useState, useEffect} from 'react'
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { useLoggedInId } from './App';
+import { useLoggedInId, type Game, type GamePlayer } from './App';
 import axios from 'axios';
 
 function GameScreen() {
-	let {gameId} = useParams();
-	gameId = parseInt(gameId);
+	let {gameId: idString} = useParams();
+	let gameId = idString?parseInt(idString):NaN;
 	let {loggedInId} = useLoggedInId();
-	const [game, setGame] = useState(null);
-	const [players, setPlayers] = useState([]);
-	let [userPlayer, setUserPlayer] = useState(null);
-	const [inGame, setInGame] = useState([]);
+	const [game, setGame] = useState<Game|null>(null);
+	const [players, setPlayers] = useState<GamePlayer[]>([]);
+	let [userPlayer, setUserPlayer] = useState<GamePlayer|undefined>(undefined);
+	const [inGame, setInGame] = useState<boolean>(false);
 
 	useEffect(()=>{
 		const eventSource = new EventSource(`http://localhost:8080/SubGame/${gameId}`);
@@ -22,7 +22,7 @@ function GameScreen() {
 		});
 
 		eventSource.addEventListener("PLAYER", (event)=>{
-			let json = JSON.parse(event.data);
+			let json: GamePlayer[] = JSON.parse(event.data);
 			setPlayers(json);
 			let curPlay = json.filter(p=>p.playerId===loggedInId)
 			setInGame(curPlay.length>0);
@@ -51,55 +51,37 @@ function GameScreen() {
 	<div className="GameScreen">
 		<div className="CurrentPlayers">
 		{players.map((player)=>{
-			return <PlayerDiceInfo key={player.playerId} playerId={player.playerId} diceLeft={player.diceCount} currentPlayer={game.currentPlayer} maxDice={game.maxDice??6}/>
+			return <PlayerDiceInfo key={player.playerId} player={player} currentPlayer={game.currentPlayer} maxDice={game.maxDice??6}/>
 		})}
 		</div>
 		<hr/>
-		<PreviousBet game={game}/>
+		<PreviousBet game={game} players={players}/>
 		<BetUI game={game} inGame={inGame} setGame={setGame}/>
 		<PlayersDice inGame={inGame} dice={userPlayer?[userPlayer.die1, userPlayer.die2, userPlayer.die3, userPlayer.die4, userPlayer.die5, userPlayer.die6].slice(0, userPlayer.diceCount):[]}/>
 	</div>
 	);
 }
 
-function PlayerDiceInfo({playerId, diceLeft, currentPlayer, maxDice}){
+function PlayerDiceInfo({player, currentPlayer, maxDice}: {player:GamePlayer, currentPlayer: number, maxDice: number}){
 	const {loggedInId} = useLoggedInId();
-	const [playerData, setPlayerData] = useState(null);
-	useEffect(()=>{
-		fetch('http://localhost:8080/User/'+playerId)
-			.then(response=>response.json())
-			.then(data => setPlayerData(data))
-			.catch(error => console.error('Error fetching data: ', error))
-	}, [playerId]);
 	return (
-		<div className={"PlayerInfoContainer "+(currentPlayer===playerId?"CurrentPlayer":"")}>
+		<div className={"PlayerInfoContainer "+(currentPlayer===player.playerId?"CurrentPlayer":"")}>
 			<header className="pInfoHeader">
-				{playerId===loggedInId?"You":(playerData?.username??"Loading...")}
+				{player.playerId===loggedInId?"You":(player.username)}
 			</header>
 			<div>Dice in play:</div>
-			<img className="DiceLeft" src={"/dice/"+diceLeft+".png"} alt=""></img>
-			<div className="LostDice">Lost dice: {maxDice-diceLeft}</div>
+			<img className="DiceLeft" src={"/dice/"+player.diceLeft+".png"} alt=""></img>
+			<div className="LostDice">Lost dice: {maxDice-player.diceLeft}</div>
 		</div>
 	);
 }
 
-function PreviousBet({game}){
+function PreviousBet({game, players}: {game:Game, players:GamePlayer[]}){
 	let {loggedInId} = useLoggedInId();
 	let displayText = game.betCount === 0 || game.betDie === 0;//both should be >1 if a valid guess was made
-	const [playerData, setPlayerData] = useState(null);
-	const [previousPlayerData, setPreviousPlayerData] = useState(null);
-	useEffect(()=>{
-		fetch('http://localhost:8080/User/'+game.currentPlayer)
-			.then(response=>response.json())
-			.then(data => setPlayerData(data))
-			.catch(error => console.error('Error fetching data: ', error))
-	}, [game]);
-	useEffect(()=>{
-		fetch('http://localhost:8080/User/'+game.previousPlayer)
-			.then(response=>response.json())
-			.then(data => setPreviousPlayerData(data))
-			.catch(error => console.error('Error fetching data: ', error))
-	}, [game]);
+	const playerData = players.filter(p=>p.playerId===game.currentPlayer)[0];
+	const previousPlayerData = players.filter(p=>p.playerId===game.previousPlayer)[0];
+
 	if(displayText){
 		if(game.currentPlayer === loggedInId){
 			return (
@@ -166,7 +148,7 @@ function PreviousBet({game}){
 	}
 }
 
-function PlayersDice({inGame, dice}){
+function PlayersDice({inGame, dice}: {inGame:boolean, dice:number[]}){
 	if(!inGame){
 		return null;
 	}
@@ -180,13 +162,13 @@ function PlayersDice({inGame, dice}){
 	)
 }
 
-function PlayerDie({roll}){
+function PlayerDie({roll}: {roll:number}){
 	return(
 		<img className="playerDice" src={"/dice/"+roll+".png"} alt=""></img>
 	)
 }
 
-function BetUI({game, inGame, setGame}){
+function BetUI({game, inGame, setGame}: {game:Game, inGame:boolean, setGame:React.Dispatch<React.SetStateAction<Game|null>>}){
 	let {loggedInId} = useLoggedInId();
 	let navigate = useNavigate();
 	let [count, setCount] = useState(game.betCount+1);
