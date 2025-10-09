@@ -126,6 +126,8 @@ public class GameService{
 	}
 
 	public Game resetDice(Game game){
+		game.setBetCount(0);
+		game.setBetDie(0);
 		for(int i = 1; i<=6; i++){
 			game.setCountByDie(i, 0);
 		}
@@ -166,16 +168,19 @@ public class GameService{
 	public Game challengeBet(Game game){
 		game.setGameState(GameState.CONTESTING);
 		gameRepository.save(game);
+		System.out.println("save contesting state");
 
 		scheduledExecutorService.schedule(()->{
 			Game game1 = roundResult(game);
-			saveGame(game1);
 			game1.setGameState(GameState.RESOLVING);
+			saveGame(game1);
+			System.out.println("save resolving state");
 			scheduledExecutorService.schedule(()->{
 				endOfRound(game1);
 				game1.setGameState(GameState.PLAYING);
 				Game game2 = newRound(game1);
 				saveGame(game2);
+				System.out.println("Saving new round");
 				return game2;
 			}, 3, TimeUnit.SECONDS);
 		}, 3, TimeUnit.SECONDS);
