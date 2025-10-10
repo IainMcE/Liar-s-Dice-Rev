@@ -18,6 +18,8 @@ public class GamePlayerService{
 	@Autowired
 	GamePlayerRepository gamePlayerRepository;
 	@Autowired
+	AccountService accountService;
+	@Autowired
 	ApplicationEventPublisher eventPublisher;
 	
 	public List<GamePlayer> getPlayersByGameId(int gameId){
@@ -58,6 +60,18 @@ public class GamePlayerService{
 
 	public GamePlayer loseDie(GamePlayer gamePlayer){
 		gamePlayer.loseDie();
+		return saveGamePlayer(gamePlayer);
+	}
+
+	public GamePlayer gameEnd(GamePlayer gamePlayer){
+		String result = "";
+		if(gamePlayer.getDiceCount()>0){
+			result = "Won";
+		}else{
+			result = "Lost"
+		}
+		gamePlayer.setAccount(accountService.gameEnd(gamePlayer.getAccount(), result));
+		//removeGamePlayer(gamePlayer);	//the users leaving will remove the game players (maybe, clean up would be a good idea)
 		return saveGamePlayer(gamePlayer);
 	}
 }

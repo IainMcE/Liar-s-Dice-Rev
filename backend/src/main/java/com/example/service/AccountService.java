@@ -33,11 +33,24 @@ public class AccountService{
         return accountRepository.save(account);
     }
 
+    public Account saveAccount(Account account){
+        return accountRepository.save(account);
+    }
+
     public Account getDisplayAccountById(int accountId){
         Optional<Account> matching = accountRepository.findByAccountId(accountId);
         if(matching.isPresent()){
             return matching.get().displayInformation();
         }
         return null;
+    }
+
+    public Account gameEnd(Account account, String result){
+        if(result == "Won"){
+            account.incrementWins();
+        }else if(result == "Lost"){
+            account.incrementLosses();
+        }
+        return saveAccount(account);
     }
 }

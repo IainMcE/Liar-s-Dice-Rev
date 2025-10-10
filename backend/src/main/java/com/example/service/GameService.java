@@ -178,9 +178,14 @@ public class GameService{
 			scheduledExecutorService.schedule(()->{
 				endOfRound(game1);
 				game1.setGameState(GameState.PLAYING);
-				Game game2 = newRound(game1);
-				saveGame(game2);
-				System.out.println("Saving new round");
+				Game game2;
+				if(checkGameEnd(game1)){
+					game2 = endGame(game1);
+				}else{
+					game2 = newRound(game1);
+					saveGame(game2);
+					System.out.println("Saving new round");
+				}
 				return game2;
 			}, 3, TimeUnit.SECONDS);
 		}, 3, TimeUnit.SECONDS);
@@ -202,5 +207,28 @@ public class GameService{
 		GamePlayer loser = gamePlayerService.getEntityByGameAndUser(game.getGameId(), game.getLoserId());
 		gamePlayerService.loseDie(loser);
 		return game;
+	}
+
+	public boolean checkGameEnd(Game game){
+		boolean noPlayersOut = true;
+		List<GamePlayer> players = gamePlayerService.getPlayersByGameId(game.getGameId());
+		for(GamePlayer player : players){
+			if(player.getDiceCount()>0){
+				if(noPlayersOut){	//at least one player has dice
+					noPlayersOut = false;
+				}else{	//at least 2 players have dice, continue the game
+					return false;
+				}
+			}
+		}
+		return true;	//at most 1 player is still in, game should end
+	}
+
+	public Game endGame(Game game){
+		List<GamePlayer> players = gamePlayerService.getPlayersByGameId(game.getGameId());
+		for(GamePlayer player : players){
+			gamePlayerService.endRound(player);
+		}
+		return saveGame(game);
 	}
 }

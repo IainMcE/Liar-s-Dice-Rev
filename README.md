@@ -1,30 +1,34 @@
 # Liar-s-Dice-Rev
 
-Build a fullstack application using Spring Boot & React. Back your data with a SQL database, expose with an HTTP API, and a webapp UI.
+A web app that allows users to play Liar's dice online.
 
-Technology Requirements
-	Spring Boot
-	Spring Web, Spring JPA (or JDBC)
-	SQL (H2 embedded, Postgres, etc)
-	React
-	Maven
-	GitHub
-Deadline & Presentation
-	First Checkpoint: 9/26
-	Final Presentation: 10/10
+Users are able to:
+* Create an account/log in
+* View games if they are public or are made by a friend
+* Join, spectate, or return (if already joined) to those games
+	* Users cannot join a game already in progress
+	* Users are only allowed to spectate if they are not logged in
+* Play a game of Liar's Dice
+	* Increase the bid
+	* Challenge the previous bid
+	* Watch as the results play out
+* View user profiles
+* Add friends
 
-Users can:
-	sign up/log in
-	view games being set up or actively playing
-		filter to games hosted(/played?) by friends
-	start/join/spectate a game
-	invite friends to join a game before it starts
-	play liars dice
-	add others to a "friend" list
-	see self and others' profiles
+Technology Used:
+* Spring Boot, Spring Web, Spring JPA
+* SQL (H2 embedded)
+* React
+* TypeScript
+* CSS
+* Maven
+* GitHub
+* Docker
+* AWS
 
-opitonal ideas:
-	match history
-	blocking users
-	auth for resetting passwords
-	"physically" simulated dice using three.js
+Ideas for future development:
+* An invite system
+* Sort the list of games to prioritize certain games
+* Match history
+* Profile authentication
+* "Physically" simulated dice using three.js
